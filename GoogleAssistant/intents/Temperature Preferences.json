@@ -1,0 +1,76 @@
+{
+  "id": "1630f763-b218-4251-9eca-dd7e350c7b3a",
+  "name": "Temperature Preferences",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "49dc5211-cdd8-4eaa-8764-adb005983bfc",
+          "required": true,
+          "dataType": "@sys.temperature",
+          "name": "temperature",
+          "value": "$temperature",
+          "prompts": [
+            {
+              "lang": "en",
+              "value": "At what temperature Fahrenheit?"
+            },
+            {
+              "lang": "en",
+              "value": "What temperature Fahrenheit do you feel that way?"
+            }
+          ],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": [],
+          "isList": false
+        },
+        {
+          "id": "42f2952c-f3dd-47c4-b4ab-9735e52d03dd",
+          "required": true,
+          "dataType": "@conditions",
+          "name": "conditions",
+          "value": "$conditions",
+          "prompts": [
+            {
+              "lang": "en",
+              "value": "Does that make you feel hot, cold, or comfy?"
+            },
+            {
+              "lang": "en",
+              "value": "Is that when you are warm, comfortable, or chilly?"
+            }
+          ],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": [],
+          "isList": false
+        }
+      ],
+      "messages": [
+        {
+          "type": 0,
+          "lang": "en",
+          "condition": "",
+          "speech": []
+        }
+      ],
+      "defaultResponsePlatforms": {},
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

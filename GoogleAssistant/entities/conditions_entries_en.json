@@ -1,0 +1,27 @@
+[
+  {
+    "value": "Hot",
+    "synonyms": [
+      "Hot",
+      "warm",
+      "heated",
+      "burning"
+    ]
+  },
+  {
+    "value": "comfy",
+    "synonyms": [
+      "comfy",
+      "moderate",
+      "okay feeling"
+    ]
+  },
+  {
+    "value": "cold",
+    "synonyms": [
+      "cold",
+      "chilly",
+      "freeezing"
+    ]
+  }
+]

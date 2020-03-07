@@ -1,0 +1,278 @@
+[
+  {
+    "id": "b567e930-1366-4487-979f-ac576e778bc7",
+    "data": [
+      {
+        "text": "I feel the weather is ",
+        "userDefined": false
+      },
+      {
+        "text": "okay",
+        "alias": "conditions",
+        "meta": "@conditions",
+        "userDefined": false
+      },
+      {
+        "text": " when",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "0ef0283d-2817-46de-a7d5-6eeebdcda254",
+    "data": [
+      {
+        "text": "I feel ",
+        "userDefined": false
+      },
+      {
+        "text": "comfy",
+        "alias": "conditions",
+        "meta": "@conditions",
+        "userDefined": false
+      },
+      {
+        "text": " when",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "4350fbb2-5f45-4908-953c-3c47d5a38ce1",
+    "data": [
+      {
+        "text": "Set when i feel the temperature is ",
+        "userDefined": false
+      },
+      {
+        "text": "moderate",
+        "alias": "conditions",
+        "meta": "@conditions",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "347f85ac-4d53-4141-a8d5-c6504679be27",
+    "data": [
+      {
+        "text": "set my temp preferences for ",
+        "userDefined": false
+      },
+      {
+        "text": "chilly",
+        "alias": "conditions",
+        "meta": "@conditions",
+        "userDefined": false
+      },
+      {
+        "text": ".",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "7563e64b-b748-4c8b-80e8-2da20295bb33",
+    "data": [
+      {
+        "text": "set my temp preferences for ",
+        "userDefined": false
+      },
+      {
+        "text": "cold",
+        "alias": "conditions",
+        "meta": "@conditions",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "ca6dd679-e6c0-408c-96ff-445868822c6d",
+    "data": [
+      {
+        "text": "Set my temp preferences for ",
+        "userDefined": false
+      },
+      {
+        "text": "hot",
+        "alias": "conditions",
+        "meta": "@conditions",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "ef2a546f-d6c4-4bfc-9080-91e949565ddd",
+    "data": [
+      {
+        "text": "Set my temperature preferences.",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "d533c112-4f05-43ce-945a-04c6ce5c5e38",
+    "data": [
+      {
+        "text": "I am ",
+        "userDefined": false
+      },
+      {
+        "text": "comfy",
+        "alias": "conditions",
+        "meta": "@conditions",
+        "userDefined": true
+      },
+      {
+        "text": " at ",
+        "userDefined": false
+      },
+      {
+        "text": "62 degrees",
+        "alias": "temperature",
+        "meta": "@sys.temperature",
+        "userDefined": false
+      },
+      {
+        "text": " Fahrenheit",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "c233af8d-0306-4d5f-923e-fa41174b95e1",
+    "data": [
+      {
+        "text": "It is ",
+        "userDefined": false
+      },
+      {
+        "text": "hot",
+        "alias": "conditions",
+        "meta": "@conditions",
+        "userDefined": true
+      },
+      {
+        "text": " over ",
+        "userDefined": false
+      },
+      {
+        "text": "73 degrees Fahrenheit",
+        "alias": "temperature",
+        "meta": "@sys.temperature",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "878eb1ce-db89-4a06-960b-e74c699b32f3",
+    "data": [
+      {
+        "text": "It is ",
+        "userDefined": false
+      },
+      {
+        "text": "burning",
+        "alias": "conditions",
+        "meta": "@conditions",
+        "userDefined": true
+      },
+      {
+        "text": " over ",
+        "userDefined": false
+      },
+      {
+        "text": "84 degrees",
+        "alias": "temperature",
+        "meta": "@sys.temperature",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "c7f689c7-b4c1-4600-83d7-63f12d973373",
+    "data": [
+      {
+        "text": "I am ",
+        "userDefined": false
+      },
+      {
+        "text": "cold",
+        "alias": "conditions",
+        "meta": "@conditions",
+        "userDefined": true
+      },
+      {
+        "text": " when it it is ",
+        "userDefined": false
+      },
+      {
+        "text": "20 degrees farenheit",
+        "alias": "temperature",
+        "meta": "@sys.temperature",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "e156d5ce-0997-4907-b375-2578491d2555",
+    "data": [
+      {
+        "text": "I am ",
+        "userDefined": false
+      },
+      {
+        "text": "cold",
+        "alias": "conditions",
+        "meta": "@conditions",
+        "userDefined": true
+      },
+      {
+        "text": " when it is ",
+        "userDefined": false
+      },
+      {
+        "text": "40 degrees farenheit",
+        "alias": "temperature",
+        "meta": "@sys.temperature",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  }
+]

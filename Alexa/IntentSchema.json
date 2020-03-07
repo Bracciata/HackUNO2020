@@ -4,6 +4,23 @@
       "invocationName": "uno",
       "intents": [
         {
+          "name": "TemperaturePreferences",
+          "slots": [
+            {
+              "name": "conditionsslot",
+              "type": "CONDITIONS"
+            }
+          ],
+          "samples": [
+            "i feel the weather is {conditionsslot} when",
+            "i feel {conditionsslot} when",
+            "set my temp preferences for {conditionsslot}",
+            "set my temp preferences for {conditionsslot} .",
+            "set my temperature preferences.",
+            "set when i feel the temperature is {conditionsslot}"
+          ]
+        },
+        {
           "name": "DefaultWelcomeIntent",
           "samples": [
             "a good day",
@@ -69,6 +86,42 @@
         }
       ],
       "types": [
+        {
+          "name": "CONDITIONS",
+          "values": [
+            {
+              "name": {
+                "value": "hot",
+                "synonyms": [
+                  "hot",
+                  "warm",
+                  "heated",
+                  "burning"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "comfy",
+                "synonyms": [
+                  "comfy",
+                  "moderate",
+                  "okay feeling"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "cold",
+                "synonyms": [
+                  "cold",
+                  "chilly",
+                  "freeezing"
+                ]
+              }
+            }
+          ]
+        },
         {
           "name": "OCCASION",
           "values": [
