@@ -1,0 +1,53 @@
+[
+  {
+    "value": "Formal",
+    "synonyms": [
+      "formal",
+      "business",
+      "meeting",
+      "prom",
+      "homecoming",
+      "dance",
+      "ball",
+      "funeral",
+      "wedding"
+    ]
+  },
+  {
+    "value": "Business Casual",
+    "synonyms": [
+      "Business Casual",
+      "Work"
+    ]
+  },
+  {
+    "value": "Workout",
+    "synonyms": [
+      "Workout",
+      "Gym",
+      "Run",
+      "Jog",
+      "Swim"
+    ]
+  },
+  {
+    "value": "Lazy",
+    "synonyms": [
+      "Lazy",
+      "Home",
+      "Sleeping",
+      "Sleep in",
+      "Sleep",
+      "Relax"
+    ]
+  },
+  {
+    "value": "Casual",
+    "synonyms": [
+      "Casual",
+      "Walk",
+      "Store",
+      "Drive"
+    ]
+  }
+]

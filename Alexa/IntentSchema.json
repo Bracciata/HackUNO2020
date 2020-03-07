@@ -1,0 +1,173 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "uno",
+      "intents": [
+        {
+          "name": "DefaultWelcomeIntent",
+          "samples": [
+            "a good day",
+            "greetings",
+            "hello",
+            "hello again",
+            "hello hi",
+            "hello there",
+            "hey",
+            "hey there",
+            "heya",
+            "hi",
+            "hi there",
+            "howdy",
+            "i greet you",
+            "just going to say hi",
+            "long time no see",
+            "lovely day isn\u0027t it"
+          ]
+        },
+        {
+          "name": "Wear",
+          "slots": [
+            {
+              "name": "datetimeslot",
+              "type": "AMAZON.DATE"
+            },
+            {
+              "name": "occasionslot",
+              "type": "OCCASION"
+            },
+            {
+              "name": "genderslot",
+              "type": "GENDER"
+            }
+          ],
+          "samples": [
+            "{datetimeslot}",
+            "{genderslot} wear {datetimeslot}",
+            "wear",
+            "wear {genderslot} {datetimeslot}",
+            "what do you recommend for a {genderslot} to wear {datetimeslot}",
+            "what should a {genderslot} wear {datetimeslot}",
+            "what should i wear {datetimeslot} to {occasionslot}",
+            "what should i wear?"
+          ]
+        },
+        {
+          "name": "DailyUpdates",
+          "slots": [
+            {
+              "name": "datetimeslot",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "samples": [
+            "can you do this everyday",
+            "can you do this for me again {datetimeslot}",
+            "send daily updates",
+            "tell me everyday",
+            "update me daily"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "name": "OCCASION",
+          "values": [
+            {
+              "name": {
+                "value": "formal",
+                "synonyms": [
+                  "formal",
+                  "business",
+                  "meeting",
+                  "prom",
+                  "homecoming",
+                  "dance",
+                  "ball",
+                  "funeral",
+                  "wedding"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "business casual",
+                "synonyms": [
+                  "business casual",
+                  "work"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "workout",
+                "synonyms": [
+                  "workout",
+                  "gym",
+                  "run",
+                  "jog",
+                  "swim"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "lazy",
+                "synonyms": [
+                  "lazy",
+                  "home",
+                  "sleeping",
+                  "sleep in",
+                  "sleep",
+                  "relax"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "casual",
+                "synonyms": [
+                  "casual",
+                  "walk",
+                  "store",
+                  "drive"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GENDER",
+          "values": [
+            {
+              "name": {
+                "value": "male",
+                "synonyms": [
+                  "male",
+                  "boy",
+                  "guy",
+                  "dude",
+                  "he",
+                  "him",
+                  "his"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "female",
+                "synonyms": [
+                  "female",
+                  "women",
+                  "girl",
+                  "lady",
+                  "her",
+                  "she"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "67874e3e-c054-4fad-91ba-7878d3ecc3d5",
+    "data": [
+      {
+        "text": "Can you do this for me again ",
+        "userDefined": false
+      },
+      {
+        "text": "tomorrow",
+        "alias": "date-time",
+        "meta": "@sys.date-time",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "ebd1e6a6-893a-41e1-81be-2c88e82904f6",
+    "data": [
+      {
+        "text": "Can you do this everyday",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "3d09da2f-1fc0-4aa1-8223-34c52232aa0a",
+    "data": [
+      {
+        "text": "Tell me everyday",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "0e33cc35-1beb-43a8-860e-7b47aa54bc0e",
+    "data": [
+      {
+        "text": "Update me daily",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "320eae92-314d-42e7-98e9-667ed88af222",
+    "data": [
+      {
+        "text": "Send daily updates",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  }
+]

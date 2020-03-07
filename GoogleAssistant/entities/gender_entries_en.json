@@ -1,0 +1,25 @@
+[
+  {
+    "value": "male",
+    "synonyms": [
+      "male",
+      "boy",
+      "guy",
+      "dude",
+      "he",
+      "him",
+      "his"
+    ]
+  },
+  {
+    "value": "female",
+    "synonyms": [
+      "female",
+      "women",
+      "girl",
+      "lady",
+      "her",
+      "she"
+    ]
+  }
+]

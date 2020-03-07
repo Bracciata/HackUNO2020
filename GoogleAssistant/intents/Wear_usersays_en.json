@@ -1,0 +1,337 @@
+[
+  {
+    "id": "ea2bcd68-4b8a-4c7e-8b98-21cb711c04e1",
+    "data": [
+      {
+        "text": "What should I wear ",
+        "userDefined": false
+      },
+      {
+        "text": "this Friday",
+        "alias": "date-time",
+        "meta": "@sys.date-time",
+        "userDefined": false
+      },
+      {
+        "text": " to ",
+        "userDefined": false
+      },
+      {
+        "text": "prom",
+        "alias": "occasion",
+        "meta": "@occasion",
+        "userDefined": true
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "bd66b82d-9387-49e5-bcb0-bee432205b45",
+    "data": [
+      {
+        "text": "Wear ",
+        "userDefined": false
+      },
+      {
+        "text": "girl",
+        "alias": "gender",
+        "meta": "@gender",
+        "userDefined": true
+      },
+      {
+        "text": " ",
+        "userDefined": false
+      },
+      {
+        "text": "tomorrow",
+        "alias": "date-time",
+        "meta": "@sys.date-time",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "bfb192d9-5575-401f-9b50-b41281279514",
+    "data": [
+      {
+        "text": "Guy",
+        "alias": "gender",
+        "meta": "@gender",
+        "userDefined": true
+      },
+      {
+        "text": " wear ",
+        "userDefined": false
+      },
+      {
+        "text": "today",
+        "alias": "date-time",
+        "meta": "@sys.date-time",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "b61b8359-0a65-4455-bec5-b2eba2083206",
+    "data": [
+      {
+        "text": "What should a ",
+        "userDefined": false
+      },
+      {
+        "text": "male",
+        "alias": "gender",
+        "meta": "@gender",
+        "userDefined": true
+      },
+      {
+        "text": " wear to ",
+        "userDefined": false
+      },
+      {
+        "text": "lincoln",
+        "alias": "geo-city",
+        "meta": "@sys.geo-city",
+        "userDefined": false
+      },
+      {
+        "text": ", Nebraska ",
+        "userDefined": false
+      },
+      {
+        "text": "tomorrow",
+        "alias": "date-time",
+        "meta": "@sys.date-time",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "4bcec78b-d1b6-43a3-8921-4d1b63b615b1",
+    "data": [
+      {
+        "text": "What should a ",
+        "userDefined": false
+      },
+      {
+        "text": "girl",
+        "alias": "gender",
+        "meta": "@gender",
+        "userDefined": true
+      },
+      {
+        "text": " wear ",
+        "userDefined": false
+      },
+      {
+        "text": "today",
+        "alias": "date-time",
+        "meta": "@sys.date-time",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "9a5d12e3-00fe-471a-b786-e63015e65f5b",
+    "data": [
+      {
+        "text": "What should a ",
+        "userDefined": false
+      },
+      {
+        "text": "guy",
+        "alias": "gender",
+        "meta": "@gender",
+        "userDefined": true
+      },
+      {
+        "text": " wear ",
+        "userDefined": false
+      },
+      {
+        "text": "today",
+        "alias": "date-time",
+        "meta": "@sys.date-time",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "c444f97c-b84a-4e9d-9c1a-b0515da94762",
+    "data": [
+      {
+        "text": "What do you recommend I wear ",
+        "userDefined": false
+      },
+      {
+        "text": "tomorrow",
+        "alias": "date-time",
+        "meta": "@sys.date-time",
+        "userDefined": false
+      },
+      {
+        "text": " in ",
+        "userDefined": false
+      },
+      {
+        "text": "Denver",
+        "alias": "geo-city",
+        "meta": "@sys.geo-city",
+        "userDefined": false
+      },
+      {
+        "text": ", Colorado?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "428d0240-8cbd-4d7e-936c-e61c105e0f01",
+    "data": [
+      {
+        "text": "What do you recommend for a ",
+        "userDefined": false
+      },
+      {
+        "text": "guy",
+        "alias": "gender",
+        "meta": "@gender",
+        "userDefined": true
+      },
+      {
+        "text": " to wear ",
+        "userDefined": false
+      },
+      {
+        "text": "tomorrow",
+        "alias": "date-time",
+        "meta": "@sys.date-time",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "3dca2429-3c88-4e98-a3ce-bfebc3d16867",
+    "data": [
+      {
+        "text": "What do you ",
+        "userDefined": false
+      },
+      {
+        "text": "recommend",
+        "meta": "@sys.ignore",
+        "userDefined": true
+      },
+      {
+        "text": " for a ",
+        "userDefined": false
+      },
+      {
+        "text": "girl",
+        "alias": "gender",
+        "meta": "@gender",
+        "userDefined": true
+      },
+      {
+        "text": " to wear ",
+        "userDefined": false
+      },
+      {
+        "text": "today",
+        "alias": "date-time",
+        "meta": "@sys.date-time",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "8a3eb9b7-ea05-4bd0-aa17-e39f405d0619",
+    "data": [
+      {
+        "text": "Tomorrow",
+        "alias": "date-time",
+        "meta": "@sys.date-time",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "7b90b650-708b-4645-af1f-023707fc2ad0",
+    "data": [
+      {
+        "text": "Today",
+        "alias": "date-time",
+        "meta": "@sys.date-time",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "06106749-b51a-40e7-804d-4265dbbf2a3a",
+    "data": [
+      {
+        "text": "Wear",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "ecf32b51-ee44-4fcf-95bf-35a2fe66e831",
+    "data": [
+      {
+        "text": "What should I wear?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  }
+]
