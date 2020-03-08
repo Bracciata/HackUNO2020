@@ -92,13 +92,21 @@ app.intent('Save Preferences', (conv) => {
     }
     agent.add(conv);
 });
-app.intent('Wear', (conv, { "geo-city": city }) => {
+app.intent('Wear', (conv, { "geo-city": city ,"gender":gender,"occasion":occasion}) => {
     console.log(`City is ${city}`);
     if (conv.arguments.get(city) != "") {
-        geoCityToCoords(conv, city);
+        geoCityToCoords(conv, city,gender,occasion);
     } else {
         // TODO: ask for location permissions through google home
-        permissionChecker(conv);
+        //TODO CHECK IF YOU HAVE PERMISSIONS AND ONLY CALL IF YOU DO NOT
+        const {location} = conv.device;
+        if(location){
+            const { latitude, longitude } = location.coordinates;
+            getLocationIdForAccuweather(conv,latitude,longitude);
+        }
+        else{
+            permissionChecker(conv,city,gender,occasion);
+        }
     }
 });
 function geoCityToCoords(conv, city) {
@@ -303,7 +311,7 @@ function getLocationIdForAccuweather(conv, lat, long) {
             accuweather(agent, result.headers['x-location-key'].toString());
         })
         .catch((error) => {
-            console.log("We screewed up, no location :(");
+            console.log("We screwed up, no location :(");
             console.log(error);
         });
 }
