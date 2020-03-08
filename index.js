@@ -61,8 +61,6 @@ app.intent('Check Preferences', (conv) => {
             if (conv.user.storage.hotPref) {
                 conv.ask(`Your current hot preference is ${conv.user.storage.hotPref}`);
             }
-        } else {
-            conv.close(`Would you like to set your preference?`)
         }
     } else {
         conv.close(`We do not have permission to set your preferences. Please sign in to become verified.`);
@@ -110,33 +108,32 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
 function initialStartup(conv) {
     if (conv.user.verification === 'VERIFIED') {
         if (conv.user.storage.gender || conv.user.storage.coldPref || conv.user.storage.modPref || conv.user.storage.hotPref) {
-            if (!conv.data.gender) {
-                conv.data.gender = '';
+            if (!conv.user.storage.gender) {
+                conv.user.storage.gender = '';
             }
-            if (!conv.data.coldPref) {
-                conv.data.coldPref = 40;
+            if (!conv.user.storage.coldPref) {
+                conv.user.storage.coldPref = 40;
             }
-            if (!conv.data.modPref) {
-                conv.data.modPref = 55;
+            if (!conv.user.storage.modPref) {
+                conv.user.storage.modPref = 55;
             }
-            if (!conv.data.hotPref) {
-                conv.data.hotPref = 68;
+            if (!conv.user.storage.hotPref) {
+                conv.user.storage.hotPref = 68;
             }
-        }
     } else {
-        if (!conv.user.storage.gender) {
-            conv.user.storage.gender = '';
+        if (!conv.data.gender) {
+            conv.data.gender = '';
         }
-        if (!conv.user.storage.coldPref) {
-            conv.user.storage.coldPref = 40;
+        if (!conv.data.coldPref) {
+            conv.data.coldPref = 40;
         }
-        if (!conv.user.storage.modPref) {
-            conv.user.storage.modPref = 55;
+        if (!conv.data.modPref) {
+            conv.data.modPref = 55;
         }
-        if (!conv.user.storage.hotPref) {
-            conv.user.storage.hotPref = 68;
+        if (!conv.data.hotPref) {
+            conv.data.hotPref = 68;
         }
-        conv.close
+    }
     }
 }
 
