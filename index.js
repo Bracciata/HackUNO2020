@@ -381,7 +381,7 @@ app.intent('Permission Handler', (conv, params, confirmationGranted) => {
     const { location } = conv.device;
     if (confirmationGranted && location) {
         console.log("Got permissions to get location.");
-        conv.add("Thanks, reccomendation coming right up!")
+        conv.add("Thanks, reccomendation coming right up!");
         const { latitude, longitude } = location.coordinates;
         return getLocationIdForAccuweather(conv, latitude, longitude,"","","");
     } else {
