@@ -48,7 +48,7 @@ function httpGet(host, path) {
     canHandle(handlerInput) {
       const request = handlerInput.requestEnvelope.request;
       return request.type === 'IntentRequest'
-        && request.intent.name === 'GetWeatherLocation';
+        && request.intent.name === 'Wear';
     },
     async handle(handlerInput) {
       const response = await httpGet('http://dataservice.accuweather.com','/forecasts/v1/daily/5day/349291?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&language=en-us&details=true&metric=false');
