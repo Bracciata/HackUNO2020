@@ -287,7 +287,7 @@ function cleanList(listOne, listTwo) {
 }
 function accuweather(conv, location) {
     console.log(location);
-    return axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=NDdlL4YF9TH5LfyZGGVDNTamHJSGL1TB&language=en-us&details=true&metric=false`)
+    return axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&language=en-us&details=true&metric=false`)
         .then((result) => {
             console.log(result.data);
         })
@@ -297,7 +297,7 @@ function accuweather(conv, location) {
 }
 
 function getLocationIdForAccuweather(conv, lat, long) {
-    return axios.get(`http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=NDdlL4YF9TH5LfyZGGVDNTamHJSGL1TB&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`)
+    return axios.get(`http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`)
         .then((result) => {
             console.log(result.headers['x-location-key']);
             accuweather(agent, result.headers['x-location-key'].toString());
