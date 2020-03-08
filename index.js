@@ -114,7 +114,8 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
         }
     }
 });
-function geoCityToCoords(conv, city) {
+
+function geoCityToCoords(conv, city, gender, occasion) {
 
     axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${city}}&key=AIzaSyDRzIANAmqLQ3Dyl5yJzuy49oJBzlmhBQA`)
         .then((result) => {
@@ -122,9 +123,10 @@ function geoCityToCoords(conv, city) {
             const lat = result.data.results[0].geometry.location.lat;
             const lng = result.data.results[0].geometry.location.lng;
             console.log(`The lattitude is ${lat}  and longitude is ${lng}`);
-            getLocationIdForAccuweather(conv, city, lat, lng);
+            getLocationIdForAccuweather(conv, lat, lng, city,gender, occasion);
         });
 }
+
 function decideAndStateOutfit(agent) {
     // TODO: Figure this code out...
     app.intent('Wear', (conv) => {
@@ -137,7 +139,7 @@ function decideAndStateOutfit(agent) {
         }
     });
 
-    const intros = ['I recommend you wear a ', 'As your friend, I recommend you wear a', 'As your stylist, I recommend you wear a ', 'Based off of AccuWeather and Google Data, I recommend you wear a ', 'Based off of data sourced from AccuWeather, I recommend you wear a ', 'According to my calculations, I recommend you wear a ', 'You should wear a ', 'As your friend, I think you should wear a ', 'As your stylist, I think you should wear a ', 'Based off of AccuWeather and Google data, I think you should wear a ', 'Based off of data sourced from Accuweather, I think you should wear a ', 'According to my calculations, I think you should wear a ', 'As your friend, I think you would look great in a ', 'As your stylist, I think you would look great in a ', 'Based off of AccuWeather and Google data, I think you would look great in a ', 'Based off of data sourced from AccuWeather, I think you would look great in a ', 'According to my calculations, I think you would look great in a ', 'As your friend, I think It would great idea to wear a ', 'As your stylist, I think It would great idea to wear a ', 'Based off of AccuWeather and Google data, I think It would great idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would great idea to wear a ', 'According to my calculations, I think It would great idea to wear a ', 'As your friend, I think It would fantastic idea to wear a ', 'As your stylist, I think It would fantastic idea to wear a ', 'Based off of AccuWeather and Google data, I think It would fantastic idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would fantastic idea to wear a ', 'According to my calculations, I think It would fantastic idea to wear a ', 'As your friend, I think It would lovely idea to wear a ', 'As your stylist, I think It would lovely idea to wear a ', 'Based off of AccuWeather and Google data, I think It would lovely idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would lovely idea to wear a ', 'According to my calculations, I think It would lovely idea to wear a ', 'As your friend, I personally recommend you wear a ', 'As your stylist, I personally recommend you wear a ', 'Based off of AccuWeather and Google data, I personally recommend you wear a ', 'Based off of data sourced from AccuWeather, I personally recommend you wear a ', 'According to my calculations, I personally recommend you wear a ', 'As your friend, I think you should wear', 'As your stylist, I think you should wear', 'Based off of AccuWeather and Google data, I think you should wear', 'Based off of data sourced from AccuWeather, I think you should wear', 'According to my calculations, I think you should wear'];
+    const intro = ['I recommend you wear a ', 'As your friend, I recommend you wear a', 'As your stylist, I recommend you wear a ', 'Based off of AccuWeather and Google Data, I recommend you wear a ', 'Based off of data sourced from AccuWeather, I recommend you wear a ', 'According to my calculations, I recommend you wear a ', 'You should wear a ', 'As your friend, I think you should wear a ', 'As your stylist, I think you should wear a ', 'Based off of AccuWeather and Google data, I think you should wear a ', 'Based off of data sourced from Accuweather, I think you should wear a ', 'According to my calculations, I think you should wear a ', 'As your friend, I think you would look great in a ', 'As your stylist, I think you would look great in a ', 'Based off of AccuWeather and Google data, I think you would look great in a ', 'Based off of data sourced from AccuWeather, I think you would look great in a ', 'According to my calculations, I think you would look great in a ', 'As your friend, I think It would great idea to wear a ', 'As your stylist, I think It would great idea to wear a ', 'Based off of AccuWeather and Google data, I think It would great idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would great idea to wear a ', 'According to my calculations, I think It would great idea to wear a ', 'As your friend, I think It would fantastic idea to wear a ', 'As your stylist, I think It would fantastic idea to wear a ', 'Based off of AccuWeather and Google data, I think It would fantastic idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would fantastic idea to wear a ', 'According to my calculations, I think It would fantastic idea to wear a ', 'As your friend, I think It would lovely idea to wear a ', 'As your stylist, I think It would lovely idea to wear a ', 'Based off of AccuWeather and Google data, I think It would lovely idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would lovely idea to wear a ', 'According to my calculations, I think It would lovely idea to wear a ', 'As your friend, I personally recommend you wear a ', 'As your stylist, I personally recommend you wear a ', 'Based off of AccuWeather and Google data, I personally recommend you wear a ', 'Based off of data sourced from AccuWeather, I personally recommend you wear a ', 'According to my calculations, I personally recommend you wear a ', 'As your friend, I think you should wear', 'As your stylist, I think you should wear', 'Based off of AccuWeather and Google data, I think you should wear', 'Based off of data sourced from AccuWeather, I think you should wear', 'According to my calculations, I think you should wear'];
 
     const coldFormal = ['suit', 'black suit', 'gray suit', 'tan suit', 'dress with tights', 'tuxedo', 'floor length dress'];
     const moderateFormal = ['suit', 'black suit', 'gray suit', 'tan suit', 'dress with tights', 'tuxedo', 'floor length dress', 'dress'];
@@ -162,8 +164,9 @@ function decideAndStateOutfit(agent) {
     const removedArticlesInWind = ['dress', 'skirt'];
     const removedArticlesMale = ['skirt', 'leggings', 'dress', 'blouse'];
     const removedArticlesFemale = ['tuxedo'];
+    const removedArticlesBoth = ['skirt', 'leggings', 'dress', 'blouse', 'tuxedo'];
 
-    if (agent.parameters.gender != 'female') {
+    if (agent.parameters.gender == 'male') {
         coldFormal = cleanList(coldFormal, removedArticlesMale);
         moderateFormal = cleanList(moderateFormal, removedArticlesMale);
         hotFormal = cleanList(hotFormal, removedArticlesMale);
@@ -179,7 +182,40 @@ function decideAndStateOutfit(agent) {
         coldCasual = cleanList(coldCasual, removedArticlesMale);
         moderateCasual = cleanList(moderateCasual, removedArticlesMale);
         hotCasual = cleanList(hotCasual, removedArticlesMale);
+    } else if (agent.parameters.gender == 'female') {
+        coldFormal = cleanList(coldFormal, removedArticlesFemale);
+        moderateFormal = cleanList(moderateFormal, removedArticlesFemale);
+        hotFormal = cleanList(hotFormal, removedArticlesFemale);
+        coldBusinessCasual = cleanList(coldBusinessCasual, removedArticlesFemale);
+        moderateBusinessCasual = cleanList(moderateBusinessCasual, removedArticlesFemale);
+        hotBusinessCasual = cleanList(hotBusinessCasual, removedArticlesFemale);
+        coldLazy = cleanList(coldLazy, removedArticlesFemale);
+        moderateLazy = cleanList(moderateLazy, removedArticlesFemale);
+        hotLazy = cleanList(hotLazy, removedArticlesFemale);
+        coldWorkout = cleanList(coldWorkout, removedArticlesFemale);
+        moderateWorkout = cleanList(moderateWorkout, removedArticlesFemale);
+        hotWorkout = cleanList(hotWorkout, removedArticlesFemale);
+        coldCasual = cleanList(coldCasual, removedArticlesFemale);
+        moderateCasual = cleanList(moderateCasual, removedArticlesFemale);
+        hotCasual = cleanList(hotCasual, removedArticlesFemale);
+    } else {
+        coldFormal = cleanList(coldFormal, removedArticlesBoth);
+        moderateFormal = cleanList(moderateFormal, removedArticlesBoth);
+        hotFormal = cleanList(hotFormal, removedArticlesBoth);
+        coldBusinessCasual = cleanList(coldBusinessCasual, removedArticlesBoth);
+        moderateBusinessCasual = cleanList(moderateBusinessCasual, removedArticlesBoth);
+        hotBusinessCasual = cleanList(hotBusinessCasual, removedArticlesBoth);
+        coldLazy = cleanList(coldLazy, removedArticlesBoth);
+        moderateLazy = cleanList(moderateLazy, removedArticlesBoth);
+        hotLazy = cleanList(hotLazy, removedArticlesBoth);
+        coldWorkout = cleanList(coldWorkout, removedArticlesBoth);
+        moderateWorkout = cleanList(moderateWorkout, removedArticlesBoth);
+        hotWorkout = cleanList(hotWorkout, removedArticlesBoth);
+        coldCasual = cleanList(coldCasual, removedArticlesBoth);
+        moderateCasual = cleanList(moderateCasual, removedArticlesBoth);
+        hotCasual = cleanList(hotCasual, removedArticlesBoth);
     }
+
     if (wind >= 20) {
         coldFormal = cleanList(coldFormal, removedArticlesInWind);
         moderateFormal = cleanList(moderateFormal, removedArticlesInWind);
@@ -198,6 +234,7 @@ function decideAndStateOutfit(agent) {
         hotCasual = cleanList(hotCasual, removedArticlesInWind);
 
     }
+
     // TODO: consider checking day's high and low
     // TODO: temp should put emphasis on feels like
     if (temp <= 40) { // Cold 
