@@ -155,20 +155,7 @@ async function geoCityToCoords(conv, city, gender, occasion) {
 
 }
 
-function decideAndStateOutfit(conv) {
-    console.log("PICKING OUT AN OUTFIT");
-    return;
-    // TODO: Figure this code out...
-    app.intent('Wear', (conv) => {
-        if (conv.user.verification === 'VERIFIED') {
-            conv.user.storage.gender = conv.data.gender;
-            conv.user.storage.location = conv.data.location;
-            conv.close(`Alright, I'll store that for next time. See you then.`);
-        } else {
-            //conv.close(`I can't save that right now, but we can add it next time!`);
-        }
-    });
-
+function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
     const intro = ['I recommend you wear a ', 'As your friend, I recommend you wear a ', 'As your stylist, I recommend you wear a ', 'Based off of AccuWeather and Google Data, I recommend you wear a ', 'Based off of data sourced from AccuWeather, I recommend you wear a ', 'According to my calculations, I recommend you wear a ', 'You should wear a ', 'As your friend, I think you should wear a ', 'As your stylist, I think you should wear a ', 'Based off of AccuWeather and Google data, I think you should wear a ', 'Based off of data sourced from Accuweather, I think you should wear a ', 'According to my calculations, I think you should wear a ', 'As your friend, I think you would look great in a ', 'As your stylist, I think you would look great in a ', 'Based off of AccuWeather and Google data, I think you would look great in a ', 'Based off of data sourced from AccuWeather, I think you would look great in a ', 'According to my calculations, I think you would look great in a ', 'As your friend, I think It would great idea to wear a ', 'As your stylist, I think It would great idea to wear a ', 'Based off of AccuWeather and Google data, I think It would great idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would great idea to wear a ', 'According to my calculations, I think It would great idea to wear a ', 'As your friend, I think It would fantastic idea to wear a ', 'As your stylist, I think It would fantastic idea to wear a ', 'Based off of AccuWeather and Google data, I think It would fantastic idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would fantastic idea to wear a ', 'According to my calculations, I think It would fantastic idea to wear a ', 'As your friend, I think It would lovely idea to wear a ', 'As your stylist, I think It would lovely idea to wear a ', 'Based off of AccuWeather and Google data, I think It would lovely idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would lovely idea to wear a ', 'According to my calculations, I think It would lovely idea to wear a ', 'As your friend, I personally recommend you wear a ', 'As your stylist, I personally recommend you wear a ', 'Based off of AccuWeather and Google data, I personally recommend you wear a ', 'Based off of data sourced from AccuWeather, I personally recommend you wear a ', 'According to my calculations, I personally recommend you wear a ', 'As your friend, I think you should wear a ', 'As your stylist, I think you should wear a ', 'Based off of AccuWeather and Google data, I think you should wear a ', 'Based off of data sourced from AccuWeather, I think you should wear a ', 'According to my calculations, I think you should wear a '];
 
     var coldFormal = ['suit', 'black suit', 'gray suit', 'tan suit', 'dress with tights', 'tuxedo', 'floor length dress'];
@@ -196,7 +183,7 @@ function decideAndStateOutfit(conv) {
     const removedArticlesFemale = ['tuxedo'];
     const removedArticlesBoth = ['skirt', 'leggings', 'dress', 'blouse', 'tuxedo'];
 
-    if (agent.parameters.gender == 'male' || conv.storage.gender == 'male') {
+    if (gender == 'male' || conv.storage.gender == 'male') {
         coldFormal = cleanList(coldFormal, removedArticlesMale);
         moderateFormal = cleanList(moderateFormal, removedArticlesMale);
         hotFormal = cleanList(hotFormal, removedArticlesMale);
@@ -212,7 +199,7 @@ function decideAndStateOutfit(conv) {
         coldCasual = cleanList(coldCasual, removedArticlesMale);
         moderateCasual = cleanList(moderateCasual, removedArticlesMale);
         hotCasual = cleanList(hotCasual, removedArticlesMale);
-    } else if (agent.parameters.gender == 'female' || conv.storage.gender == 'female') {
+    } else if (gender == 'female' || conv.storage.gender == 'female') {
         coldFormal = cleanList(coldFormal, removedArticlesFemale);
         moderateFormal = cleanList(moderateFormal, removedArticlesFemale);
         hotFormal = cleanList(hotFormal, removedArticlesFemale);
@@ -268,10 +255,22 @@ function decideAndStateOutfit(conv) {
     // TODO: consider checking day's high and low
     // TODO: temp should put emphasis on feels like
 
+    if (!conv.user.storage.modPref) {
+        conv.user.storage.modPref = 68;
+    } if (!conv.user.storage.coldPref) {
+        conv.user.storage.modPref = 40;
+    } if (!conv.user.storage.hotPref) {
+        conv.user.storage.modPref = 80;
+    }
+    if(!gender){
+        if(conv.user.storage.gender){
+            gender=conv.user.storage.gender;
+        }
+    }
     var chosenIntro;
     var clothing;
-    if (temp <= conv.storage.coldPref) { // Cold 
-        switch (agent.parameters.occasion) {
+    if (temp <= conv.user.storage.coldPref) { // Cold 
+        switch (occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = coldFormal[Math.floor(Math.random() * coldFormal.length)]
@@ -302,8 +301,8 @@ function decideAndStateOutfit(conv) {
                 clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
-    } else if (temp <= conv.storage.modPref) { // Moderate
-        switch (agent.parameters.occasion) {
+    } else if (temp <= conv.user.storage.modPref) { // Moderate
+        switch (occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = moderateFormal[Math.floor(Math.random() * moderateFormal.length)]
@@ -335,7 +334,7 @@ function decideAndStateOutfit(conv) {
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
     } else { // Hot 
-        switch (agent.parameters.occasion) {
+        switch (occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = hotFormal[Math.floor(Math.random() * hotFormal.length)]
@@ -382,23 +381,24 @@ function cleanList(listOne, listTwo) {
 
 async function accuweather(conv, location, city, gender, occasion) {
     console.log(location);
-    await axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&language=en-us&details=true&metric=false`)
+    await axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&language=en-us&details=true&metric=false`)
         .then((result) => {
             console.log(result.data);
             // Pass this to what to what to wear along with other data from entities city, gender, and occasion.
             conv.ask("HEY");
+            console.log(result.DailyForecasts[0].RealFeelTemperature);
         })
         .catch((result) => {
             console.log("We screwed up");
         });
-    return decideAndStateOutfit(conv);
+    return decideAndStateOutfit(conv, city, gender, occasion, temp, wind);
 }
 
 async function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
     console.log(`THE LAT IS ${lat}`)
-    var url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`;
+    var url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`;
     console.log(url);
-    var locationKey;
+    var locationKey = "349291"; // Defaults to Omaha
     await axios.get(url)
         .then((result) => {
             console.log(result.headers['x-location-key']);
@@ -408,6 +408,7 @@ async function getLocationIdForAccuweather(conv, lat, long, city, gender, occasi
             console.log("We screwed up, no location :(");
             console.log(error);
         });
+    console.log(locationKey.toString());
     return accuweather(conv, locationKey.toString(), city, gender, occasion);
 }
 app.intent('Subscribe to Daily Updates', (conv) => {
@@ -443,6 +444,7 @@ app.intent('Permission Handler', (conv, params, confirmationGranted) => {
         console.log("Got permissions to get location.");
         conv.add("Thanks, reccomendation coming right up!");
         const { latitude, longitude } = location.coordinates;
+        console.log(`lat${latitude} and lng ${longitude}`);
         return getLocationIdForAccuweather(conv, latitude, longitude, "", "", "");
     } else {
         conv.ask(`Looks like I can't get your information.`);
