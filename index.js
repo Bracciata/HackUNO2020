@@ -117,7 +117,7 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
 
 function geoCityToCoords(conv, city, gender, occasion) {
 
-    axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${city}}&key=AIzaSyDRzIANAmqLQ3Dyl5yJzuy49oJBzlmhBQA`)
+    return axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${city}}&key=AIzaSyDRzIANAmqLQ3Dyl5yJzuy49oJBzlmhBQA`)
         .then((result) => {
             console.log(result);
             const lat = result.data.results[0].geometry.location.lat;
@@ -386,7 +386,7 @@ app.intent('Permission Handler', (conv, params, confirmationGranted) => {
         console.log("Got permissions to get location.");
         conv.add("Thanks, reccomendation coming right up!")
         const { latitude, longitude } = location.coordinates;
-        getLocationIdForAccuweather(conv, latitude, longitude,"","","");
+        return getLocationIdForAccuweather(conv, latitude, longitude,"","","");
     } else {
         conv.ask(`Looks like I can't get your information.`);
     }
