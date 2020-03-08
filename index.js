@@ -94,6 +94,7 @@ app.intent('Check Preferences', (conv) => {
     ]));
 });
 
+// Saving Gender Preference
 app.intent('Save Gender Preference', (conv) => {
     if (conv.user.verification === 'VERIFIED') {
         conv.user.storage.gender = conv.data.gender;
@@ -102,6 +103,7 @@ app.intent('Save Gender Preference', (conv) => {
         conv.ask(`I can't save that now, but we can remember them next time!`);
     }
 });
+// Saving Temperature Preferences
 app.intent('Save Preferences', (conv) => {
     if (conv.user.verification === 'VERIFIED') {
         conv.user.storage.coldPref = conv.data.coldPref;
