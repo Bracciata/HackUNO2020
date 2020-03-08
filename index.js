@@ -26,64 +26,46 @@ app.intent('Default Fallback Intent', (conv) => {
         var chosenCloser = closers[Math.floot(Math.random() * closers.length)];
         conv.close(`${chosenCloser}`);
     }
-});
 app.intent('Get Gender', (conv, { gender }) => {
     conv.data.gender = gender;
-    conv.add(`Got it dude!`);
+    conv.ask(`Got it!`);
+    conv.ask(`What do you consider as cold?`);
     agent.add(conv);
 });
-app.intent('Temperature Preferences', (conv, { temperature,conditions }) => {
-    if(conditions == "cold"){
-        // check does not exceed moderate.
+app.intent('Set Temperature Preference.', (conv, {temperature, condition}) => {
+    if (condition === cold && temperature < conv.user.storage.modPref) {
+        conv.data[condition] = temperature;
+    } else if (condition === moderate && temperature < conv.user.storage.hotPref && temperature > conv.user.storage.coldPref){
+        conv.data[condition] = temperature;
+    } else if (condition === hot && temperature > conv.user.storage.modPref) {
+        conv.data[condition] = temperature;
     }
-    conv.data[conditions] = temperature;
-}
-app.intent('Get Cold Preference', (conv, { coldPref }) => {
-    conv.data.coldPref = coldPref;
-    conv.ask(`Got it!`);
-    conv.ask(`What do you consider as moderate?`);
-    agent.add(conv);
-});
-app.intent('Get Moderate Preference', (conv, { modPref }) => {
-    conv.data.modPref = modPref;
-    conv.ask(`Got it!`);
-    conv.ask(`What do you consider as hot?`);
-    agent.add(conv);
-});
-app.intent('Get Hot Preference', (conv, { hotPref }) => {
-    conv.data.hotPref = hotPref;
-    conv.ask(`Got it!`);
-    conv.ask(`Should I remember your preferences?`);
-    agent.add(conv);
 });
 app.intent('Check Preferences', (conv) => {
-    if (conv.user.storage.gender) {
-        conv.ask(`Your current gender preference is ${conv.user.storage.gender}`);
-    }
-
-    if (conv.user.storage.coldPref) {
-        conv.ask(`Your current cold preference is ${conv.user.storage.coldPref}`);
-    }
-
-    if (conv.user.storage.modPref) {
-        conv.ask(`Your current moderate preference is ${conv.user.storage.modPref}`);
-    }
-
-    if (conv.user.storage.hotPref) {
-        conv.ask(`Your current hot preference is ${conv.user.storage.hotPref}`);
-    }
-    console.log("ye Preferencessssss");
-    conv.ask(`Would you like to modify your preferences?`);
-    app.intent('Modify Preferences?', (conv) => {
-        if (conv.user.verification === 'VERIFIED') {
-            deletePortfolio();
-            profileSave();
+    if (conv.user.verification === 'VERIFIED') {
+        if (conv.user.storage.gender && conv.user.storage.coldPref && conv.user.storage.modPref && conv.user.storage.hotPref) {
+            if (conv.user.storage.gender) {
+                conv.ask(`Your current gender preference is ${conv.user.storage.gender}`);
+            }
+            if (conv.user.storage.coldPref) {
+                conv.ask(`Your current cold preference is ${conv.user.storage.coldPref}`);
+            }
+            if (conv.user.storage.modPref) {
+                conv.ask(`Your current moderate preference is ${conv.user.storage.modPref}`);
+            }
+            if (conv.user.storage.hotPref) {
+                conv.ask(`Your current hot preference is ${conv.user.storage.hotPref}`);
+            }
+            console.log("ye Preferencessssss");
+            conv.ask(`Would you like to save a new preference?`)
         } else {
-            conv.close(`Okay nothing has been deleted.`);
+            conv.ask(`Would you like to set your preference?`)
         }
-    });
-    agent.add(conv);
+    } else {
+        conv.close(`We do not have permission to set your preferences. Please sign in to become verified.`);       
+    }
 });
+
 app.intent('Save Preferences', (conv) => {
     if (conv.user.verification === 'VERIFIED') {
         conv.user.storage.gender = conv.data.gender;
