@@ -1,6 +1,6 @@
 # HackUNO2020
 Our HackUNO2020 project.
-Authors: Thomas Bracciata, Emma Hubka, and Danny Tran
+<p>Authors: Thomas Bracciata, Emma Hubka, and Danny Tran</p>
 ## Description and overview of our project and its features. 
 <p>Uno, the smart assistant, helps you pick out an outfit perfect for the weather. While using a Google Home or an Alexa device, you can simply ask to “Talk to Uno”, and Uno will take it from there. Based on your location, your local weather, and your gender, Uno suggests clothes that will keep you comfortable all day long. With over 1.5 million combinations of responses, Uno can suggest outfits that contain anything from a formal suit to a casual sweater. With up to five days of forecasting, Uno considers wind speed, temperature, and precipitation for the most optimal outfit.</p>
 
