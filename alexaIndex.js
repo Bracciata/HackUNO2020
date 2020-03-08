@@ -2,6 +2,19 @@ const Alexa = require('ask-sdk-core');
 const axios = require('axios');
 var https = require('https');
 
+const LaunchRequestHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
+    },
+    handle(handlerInput) {
+        const speakOutput = "Hello, I am Uno. How can I help you today?";
+
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .reprompt(speakOutput)
+            .getResponse();
+    }
+};
 let x= 0;
 function httpGet(host, path) {
     return new Promise(((resolve, reject) => {
@@ -31,7 +44,7 @@ function httpGet(host, path) {
       request.end();
     }));
   }
-  const WearIntentHandler ={
+  const Wear ={
     canHandle(handlerInput) {
       const request = handlerInput.requestEnvelope.request;
       return request.type === 'IntentRequest'
@@ -46,7 +59,7 @@ function httpGet(host, path) {
       var precipitation = false;
       var temp = 50;
       var out = "";
-      if(x==0){
+      if(x===0){
      out= decideAndStateOutfit('Denver','male','formal',false,50);
         x+=1;
     }
@@ -91,10 +104,10 @@ function decideAndStateOutfit(city, gender, occasion, wind, temp) {
     const removedArticlesBoth = ['skirt', 'leggings', 'dress', 'blouse', 'tuxedo'];
 
     if (!gender) {
-        gender = conv.user.storage.gender;
+        gender = 'female';
     }
     if (gender) {
-        if (gender == 'male' || conv.storage.gender == 'male') {
+        if (gender ==='male') {
             coldFormal = cleanList(coldFormal, removedArticlesMale);
             moderateFormal = cleanList(moderateFormal, removedArticlesMale);
             hotFormal = cleanList(hotFormal, removedArticlesMale);
@@ -110,7 +123,7 @@ function decideAndStateOutfit(city, gender, occasion, wind, temp) {
             coldCasual = cleanList(coldCasual, removedArticlesMale);
             moderateCasual = cleanList(moderateCasual, removedArticlesMale);
             hotCasual = cleanList(hotCasual, removedArticlesMale);
-        } else if (gender == 'female' || conv.storage.gender == 'female') {
+        } else if (gender === 'female') {
             coldFormal = cleanList(coldFormal, removedArticlesFemale);
             moderateFormal = cleanList(moderateFormal, removedArticlesFemale);
             hotFormal = cleanList(hotFormal, removedArticlesFemale);
@@ -283,6 +296,35 @@ function cleanList(listOne, listTwo) {
     }
     return listOne;
 }
+const IntentReflectorHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest';
+    },
+    handle(handlerInput) {
+        const intentName = Alexa.getIntentName(handlerInput.requestEnvelope);
+        const speakOutput = 'REFLECTOR_MSG'+ intentName;
+
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
+            .getResponse();
+    }
+};
+const ErrorHandler = {
+    canHandle() {
+        return true;
+    },
+    handle(handlerInput, error) {
+        const speakOutput = handlerInput.t('ERROR_MSG');
+        console.log(`~~~~ Error handled: ${JSON.stringify(error)}`);
+
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .reprompt(speakOutput)
+            .getResponse();
+    }
+};
+
 
 // The SkillBuilder acts as the entry point for your skill, routing all request and response
 // payloads to the handlers above. Make sure any new handlers or interceptors you've
@@ -290,11 +332,8 @@ function cleanList(listOne, listTwo) {
 exports.handler = Alexa.SkillBuilders.custom()
     .addRequestHandlers(
         LaunchRequestHandler,
-        HelloWorldIntentHandler,
-        HelpIntentHandler,
-        CancelAndStopIntentHandler,
-        SessionEndedRequestHandler,
-        WearIntentHandler,
+        
+        Wear,
         IntentReflectorHandler, // make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
     )
     .addErrorHandlers(
