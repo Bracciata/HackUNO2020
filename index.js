@@ -388,8 +388,9 @@ function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
 function cleanList(listOne, listTwo) {
     for (var i = 0; i < listOne.length; ++i) {
         for (var j = 0; j < listTwo.length; ++j) {
-            if (listOne[i].includes(listTwo[j])) {
+            if (listOne[i].toLower().includes(listTwo[j].toLower())||listTwo[j].toLower().includes(listOne[i].toLower())) {
                 listOne.splice(i, 1);
+                break;
             }
         }
     }
