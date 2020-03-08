@@ -7,7 +7,12 @@ const app = dialogflow({ debug: true });
 app.intent('Default Welcome Intent', (conv) => {
     var greetings = ['Hey I am UNO, how can I help you today?', 'Welcome! My name is Uno, how can I help you today?', 'Welcome! It\'s Uno, how can I help you today?', 'Greetings! My name is Uno, how can I help you today?', 'Greetings! It\'s Uno, how can I help you today?', 'Salutations! My name is Uno, how can I help you today?', 'Salutations! It\'s Uno, how can I help you today?', 'Howdy! My name is Uno, how can I help you today?', 'Howdy! It\'s Uno, how can I help you today?', 'Hello! My name is Uno, how can I help you today?', 'Hello! It\'s Uno, how can I help you today?', 'Hi! My name is Uno, how can I help you today?', 'Hi! It\'s Uno, how can I help you today?'];
     var chosenGreeting = greetings[Math.floor(Math.random() * greetings.length)];
-    conv.ask(`${chosenGreeting}.`);
+    conv.ask(`${chosenGreeting}`);
+  conv.ask(new Suggestions([
+    'What do I wear now?',
+    'What do I wear today?',
+	'What do I wear?'
+  ]));
 });
 app.intent('Default Fallback Intent', (conv) => {
     conv.data.fallbackCount++;
@@ -56,12 +61,14 @@ app.intent('Check Preferences', (conv) => {
             if (conv.user.storage.hotPref) {
                 conv.ask(`Your current hot preference is ${conv.user.storage.hotPref}`);
             }
-        } else {
-            conv.close(`Would you like to set your preference?`)
         }
     } else {
         conv.close(`We do not have permission to set your preferences. Please sign in to become verified.`);
     }
+    conv.ask(new Suggestions([
+      'Yes',
+      'No'
+    ]));
 });
 app.intent('Save Preferences', (conv) => {
     if (conv.user.verification === 'VERIFIED') {
@@ -90,6 +97,10 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
         else {
             conv.ask("You will need to tell me that I have your premission to get your location");
             // ADD SUGGESTION HERE
+            conv.ask(new Suggestions([
+                'Yes',
+                'No'
+              ]));
         }
     }
 });
@@ -97,33 +108,32 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
 function initialStartup(conv) {
     if (conv.user.verification === 'VERIFIED') {
         if (conv.user.storage.gender || conv.user.storage.coldPref || conv.user.storage.modPref || conv.user.storage.hotPref) {
-            if (!conv.data.gender) {
-                conv.data.gender = '';
+            if (!conv.user.storage.gender) {
+                conv.user.storage.gender = '';
             }
-            if (!conv.data.coldPref) {
-                conv.data.coldPref = 40;
+            if (!conv.user.storage.coldPref) {
+                conv.user.storage.coldPref = 40;
             }
-            if (!conv.data.modPref) {
-                conv.data.modPref = 55;
+            if (!conv.user.storage.modPref) {
+                conv.user.storage.modPref = 55;
             }
-            if (!conv.data.hotPref) {
-                conv.data.hotPref = 68;
+            if (!conv.user.storage.hotPref) {
+                conv.user.storage.hotPref = 68;
             }
-        }
     } else {
-        if (!conv.user.storage.gender) {
-            conv.user.storage.gender = '';
+        if (!conv.data.gender) {
+            conv.data.gender = '';
         }
-        if (!conv.user.storage.coldPref) {
-            conv.user.storage.coldPref = 40;
+        if (!conv.data.coldPref) {
+            conv.data.coldPref = 40;
         }
-        if (!conv.user.storage.modPref) {
-            conv.user.storage.modPref = 55;
+        if (!conv.data.modPref) {
+            conv.data.modPref = 55;
         }
-        if (!conv.user.storage.hotPref) {
-            conv.user.storage.hotPref = 68;
+        if (!conv.data.hotPref) {
+            conv.data.hotPref = 68;
         }
-        conv.close
+    }
     }
 }
 
@@ -436,6 +446,10 @@ app.intent('Permission', (conv) => {
         permissions,
     };
     conv.ask(new Permission(options));
+    conv.ask(new Suggestions([
+        'Yes', 
+        'No'
+      ]));
 });
 app.intent('Permission Handler', (conv, params, confirmationGranted) => {
     const { location } = conv.device;
