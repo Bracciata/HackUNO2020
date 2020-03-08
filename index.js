@@ -388,9 +388,15 @@ function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
 function cleanList(listOne, listTwo) {
     for (var i = 0; i < listOne.length; ++i) {
         for (var j = 0; j < listTwo.length; ++j) {
-            if (listOne[i].toLower().includes(listTwo[j].toLower())||listTwo[j].toLower().includes(listOne[i].toLower())) {
-                listOne.splice(i, 1);
-                break;
+            if (listOne[i].toLowerCase().includes(listTwo[j].toLowerCase())||listTwo[j].toLowerCase().includes(listOne[i].toLowerCase())) {
+                try{
+              	listOne.splice(i, 1);
+                                break;
+}
+              
+              catch(err){
+              listOne = cleanList(listOne, listTwo);
+              }
             }
         }
     }
@@ -406,7 +412,6 @@ async function accuweather(conv, location, city, gender, occasion) {
         .then((result) => {
             console.log(result.data);
             // Pass this to what to what to wear along with other data from entities city, gender, and occasion.
-            conv.ask("HEY");
             console.log(result.data.DailyForecasts[0].AirAndPollen);
             console.log(result.data.DailyForecasts[0]);
             console.log(result.data.DailyForecasts[0].RealFeelTemperature);
@@ -431,7 +436,6 @@ async function accuweather(conv, location, city, gender, occasion) {
 }
 
 async function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
-    console.log(`THE LAT IS ${lat}`);
     var url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`;
     console.log(url);
     var locationKey = "349291"; // Defaults to Omaha
@@ -441,7 +445,7 @@ async function getLocationIdForAccuweather(conv, lat, long, city, gender, occasi
             locationKey = result.headers['x-location-key'];
         })
         .catch((error) => {
-            console.log("We screwed up, no location :(");
+            console.log(`No location due to API failure: ${error}`);
             console.log(error);
         });
     console.log(locationKey.toString());
@@ -469,10 +473,10 @@ app.intent('Permission', (conv) => {
         permissions,
     };
     conv.ask(new Permission(options));
-    conv.ask(new Suggestions([
+    /*conv.ask(new Suggestions([
         'Yes',
         'No'
-    ]));
+    ]));*/
 });
 app.intent('Permission Handler', (conv, params, confirmationGranted) => {
     const { location } = conv.device;
