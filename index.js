@@ -37,7 +37,7 @@ app.intent('Temperature Preferences', (conv, { temperature,conditions }) => {
         // check does not exceed moderate.
     }
     conv.data[conditions] = temperature;
-}
+});
 app.intent('Get Cold Preference', (conv, { coldPref }) => {
     conv.data.coldPref = coldPref;
     conv.ask(`Got it!`);
@@ -127,7 +127,7 @@ function geoCityToCoords(conv, city, gender, occasion) {
         });
 }
 
-function decideAndStateOutfit(agent) {
+function decideAndStateOutfit(conv) {
     // TODO: Figure this code out...
     app.intent('Wear', (conv) => {
         if (conv.user.verification === 'VERIFIED') {
@@ -346,6 +346,7 @@ function accuweather(conv, location, city, gender, occasion) {
 }
 
 function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
+    console.log(`THE LAT IS ${lat}`)
     return axios.get(`http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`)
         .then((result) => {
             console.log(result.headers['x-location-key']);
