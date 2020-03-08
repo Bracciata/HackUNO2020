@@ -7,9 +7,10 @@ const app = dialogflow({ debug: true });
 app.intent('Default Welcome Intent', (conv) => {
     var greetings = ['Hey I am UNO, how can I help you today?', 'Welcome! My name is Uno, how can I help you today?', 'Welcome! It\'s Uno, how can I help you today?', 'Greetings! My name is Uno, how can I help you today?', 'Greetings! It\'s Uno, how can I help you today?', 'Salutations! My name is Uno, how can I help you today?', 'Salutations! It\'s Uno, how can I help you today?', 'Howdy! My name is Uno, how can I help you today?', 'Howdy! It\'s Uno, how can I help you today?', 'Hello! My name is Uno, how can I help you today?', 'Hello! It\'s Uno, how can I help you today?', 'Hi! My name is Uno, how can I help you today?', 'Hi! It\'s Uno, how can I help you today?'];
     var chosenGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+    // Call to set default preferences.
+    initialStartup(conv);
     conv.ask(`${chosenGreeting}`);
   conv.ask(new Suggestions([
-    'What do I wear now?',
     'What do I wear today?',
 	'What do I wear?'
   ]));
@@ -21,8 +22,11 @@ app.intent('Default Fallback Intent', (conv) => {
         conv.contexts.set(DONE_YES_NO_CONTEXT, 5);
         var closerQuestions = ['Did you decide what you will wear already?', 'Did you pick out an outfit?', 'Did you get an outfit selected?', 'Did you get an outflit picked out?']; // Add
         var chosenCloserQuestion = closerQuestions[Math.floor(Math.random() * closerQuestions.length)];
-
         conv.ask(`${chosenCloserQuestion}`);
+        conv.ask(new Suggestions([
+            'Yes', 
+            'No'
+          ]));
     } else {
         conv.contexts.set(DONE_YES_NO_CONTEXT, 5);
         var closers = ['I am struggling to understand right now, lets talk again soon!', 'I don\'t understand what you want right now, lets talk again soon!', 'I am struggling to understand right now, ask me again!', 'I don\'t understand what you want right now, ask me again!'];
@@ -35,6 +39,10 @@ app.intent('Default Fallback Intent', (conv) => {
 app.intent('Set Gender', (conv, { "gender": gender }) => {
     conv.ask(`What do you identify as?`);
     conv.data.gender = gender;
+    conv.ask(new Suggestions([
+        'Male', 
+        'Female'
+      ]));
 });
 // Setting temperature preferences
 app.intent('Set Temperature Preferences', (conv, { "temperature": temperature, "conditions": condition }) => {
@@ -47,6 +55,10 @@ app.intent('Set Temperature Preferences', (conv, { "temperature": temperature, "
         conv.data.hotPref = temperature;
     }
     conv.ask(`Do you want me to save your preferences?`);
+    conv.ask(new Suggestions([
+        'Yes', 
+        'No'
+      ]));
 });
 // Checking all avaliable preferences
 app.intent('Check Preferences', (conv) => {
@@ -65,13 +77,19 @@ app.intent('Check Preferences', (conv) => {
             if (conv.user.storage.hotPref) {
                 conv.ask(`Your current hot preference is ${conv.user.storage.hotPref}`);
             }
+        } else {
+            conv.close(`Would you like to set your preference?`);
+            conv.ask(new Suggestions([
+                'Yes', 
+                'No'
+              ]));
         }
     } else {
         conv.close(`We do not have permission to set your preferences. Please sign in to become verified.`);
     }
     conv.ask(new Suggestions([
-      'Yes',
-      'No'
+        'Yes',
+        'No'
     ]));
 });
 app.intent('Save Preferences', (conv) => {
@@ -86,24 +104,24 @@ app.intent('Save Preferences', (conv) => {
     }
 });
 app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occasion }) => {
-    initialStartup(conv);
     console.log(`City is ${city}`);
     if (city != "") {
+        // Location was passed.
         return geoCityToCoords(conv, city, gender, occasion);
     } else {
-        // TODO: ask for location permissions through google home
-        //TODO CHECK IF YOU HAVE PERMISSIONS AND ONLY CALL IF YOU DO NOT
+        // Checks if we can get the devices location and if not tell the user to grant permission.
+        // However, fist check they do not have a home location. TODO: Implement home location.
         const { location } = conv.device;
         if (location) {
             const { latitude, longitude } = location.coordinates;
             getLocationIdForAccuweather(conv, latitude, longitude, city, gender, occasion);
         }
         else {
-            conv.ask("You will need to tell me that I have your premission to get your location");
+            conv.ask("Do I have your premission to get your location?");
             // ADD SUGGESTION HERE
             conv.ask(new Suggestions([
-                'Yes',
-                'No'
+                'Yes, you do',
+                'No, you don\'t'
               ]));
         }
     }
@@ -187,38 +205,43 @@ function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
     const removedArticlesFemale = ['tuxedo'];
     const removedArticlesBoth = ['skirt', 'leggings', 'dress', 'blouse', 'tuxedo'];
 
-    if (gender == 'male' || conv.storage.gender == 'male') {
-        coldFormal = cleanList(coldFormal, removedArticlesMale);
-        moderateFormal = cleanList(moderateFormal, removedArticlesMale);
-        hotFormal = cleanList(hotFormal, removedArticlesMale);
-        coldBusinessCasual = cleanList(coldBusinessCasual, removedArticlesMale);
-        moderateBusinessCasual = cleanList(moderateBusinessCasual, removedArticlesMale);
-        hotBusinessCasual = cleanList(hotBusinessCasual, removedArticlesMale);
-        coldLazy = cleanList(coldLazy, removedArticlesMale);
-        moderateLazy = cleanList(moderateLazy, removedArticlesMale);
-        hotLazy = cleanList(hotLazy, removedArticlesMale);
-        coldWorkout = cleanList(coldWorkout, removedArticlesMale);
-        moderateWorkout = cleanList(moderateWorkout, removedArticlesMale);
-        hotWorkout = cleanList(hotWorkout, removedArticlesMale);
-        coldCasual = cleanList(coldCasual, removedArticlesMale);
-        moderateCasual = cleanList(moderateCasual, removedArticlesMale);
-        hotCasual = cleanList(hotCasual, removedArticlesMale);
-    } else if (gender == 'female' || conv.storage.gender == 'female') {
-        coldFormal = cleanList(coldFormal, removedArticlesFemale);
-        moderateFormal = cleanList(moderateFormal, removedArticlesFemale);
-        hotFormal = cleanList(hotFormal, removedArticlesFemale);
-        coldBusinessCasual = cleanList(coldBusinessCasual, removedArticlesFemale);
-        moderateBusinessCasual = cleanList(moderateBusinessCasual, removedArticlesFemale);
-        hotBusinessCasual = cleanList(hotBusinessCasual, removedArticlesFemale);
-        coldLazy = cleanList(coldLazy, removedArticlesFemale);
-        moderateLazy = cleanList(moderateLazy, removedArticlesFemale);
-        hotLazy = cleanList(hotLazy, removedArticlesFemale);
-        coldWorkout = cleanList(coldWorkout, removedArticlesFemale);
-        moderateWorkout = cleanList(moderateWorkout, removedArticlesFemale);
-        hotWorkout = cleanList(hotWorkout, removedArticlesFemale);
-        coldCasual = cleanList(coldCasual, removedArticlesFemale);
-        moderateCasual = cleanList(moderateCasual, removedArticlesFemale);
-        hotCasual = cleanList(hotCasual, removedArticlesFemale);
+    if (!gender) {
+        gender = conv.user.storage.gender;
+    }
+    if (gender) {
+        if (gender == 'male' || conv.storage.gender == 'male') {
+            coldFormal = cleanList(coldFormal, removedArticlesMale);
+            moderateFormal = cleanList(moderateFormal, removedArticlesMale);
+            hotFormal = cleanList(hotFormal, removedArticlesMale);
+            coldBusinessCasual = cleanList(coldBusinessCasual, removedArticlesMale);
+            moderateBusinessCasual = cleanList(moderateBusinessCasual, removedArticlesMale);
+            hotBusinessCasual = cleanList(hotBusinessCasual, removedArticlesMale);
+            coldLazy = cleanList(coldLazy, removedArticlesMale);
+            moderateLazy = cleanList(moderateLazy, removedArticlesMale);
+            hotLazy = cleanList(hotLazy, removedArticlesMale);
+            coldWorkout = cleanList(coldWorkout, removedArticlesMale);
+            moderateWorkout = cleanList(moderateWorkout, removedArticlesMale);
+            hotWorkout = cleanList(hotWorkout, removedArticlesMale);
+            coldCasual = cleanList(coldCasual, removedArticlesMale);
+            moderateCasual = cleanList(moderateCasual, removedArticlesMale);
+            hotCasual = cleanList(hotCasual, removedArticlesMale);
+        } else if (gender == 'female' || conv.storage.gender == 'female') {
+            coldFormal = cleanList(coldFormal, removedArticlesFemale);
+            moderateFormal = cleanList(moderateFormal, removedArticlesFemale);
+            hotFormal = cleanList(hotFormal, removedArticlesFemale);
+            coldBusinessCasual = cleanList(coldBusinessCasual, removedArticlesFemale);
+            moderateBusinessCasual = cleanList(moderateBusinessCasual, removedArticlesFemale);
+            hotBusinessCasual = cleanList(hotBusinessCasual, removedArticlesFemale);
+            coldLazy = cleanList(coldLazy, removedArticlesFemale);
+            moderateLazy = cleanList(moderateLazy, removedArticlesFemale);
+            hotLazy = cleanList(hotLazy, removedArticlesFemale);
+            coldWorkout = cleanList(coldWorkout, removedArticlesFemale);
+            moderateWorkout = cleanList(moderateWorkout, removedArticlesFemale);
+            hotWorkout = cleanList(hotWorkout, removedArticlesFemale);
+            coldCasual = cleanList(coldCasual, removedArticlesFemale);
+            moderateCasual = cleanList(moderateCasual, removedArticlesFemale);
+            hotCasual = cleanList(hotCasual, removedArticlesFemale);
+        }
     } else {
         coldFormal = cleanList(coldFormal, removedArticlesBoth);
         moderateFormal = cleanList(moderateFormal, removedArticlesBoth);
@@ -259,106 +282,102 @@ function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
     // TODO: consider checking day's high and low
     // TODO: temp should put emphasis on feels like
 
-    // Getting specified gender
-    if(!gender){
-        gender=conv.user.storage.gender;
-    }
     var chosenIntro;
     var clothing;
     if (temp <= conv.user.storage.coldPref) { // Cold 
         switch (occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = coldFormal[Math.floor(Math.random() * coldFormal.length)]
+                clothing = coldFormal[Math.floor(Math.random() * coldFormal.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Business Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = coldBusinessCasual[Math.floor(Math.random() * coldBusinessCasual.length)]
+                clothing = coldBusinessCasual[Math.floor(Math.random() * coldBusinessCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Workout':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = coldWorkout[Math.floor(Math.random() * coldWorkout.length)]
+                clothing = coldWorkout[Math.floor(Math.random() * coldWorkout.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Lazy':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = coldLazy[Math.floor(Math.random() * coldLazy.length)]
+                clothing = coldLazy[Math.floor(Math.random() * coldLazy.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)]
+                clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             default:
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)]
+                clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
     } else if (temp <= conv.user.storage.modPref) { // Moderate
         switch (occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = moderateFormal[Math.floor(Math.random() * moderateFormal.length)]
+                clothing = moderateFormal[Math.floor(Math.random() * moderateFormal.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Business Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = moderateBusinessCasual[Math.floor(Math.random() * moderateBusinessCasual.length)]
+                clothing = moderateBusinessCasual[Math.floor(Math.random() * moderateBusinessCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Workout':
-                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                var clothing = moderateWorkout[Math.floor(Math.random() * moderateWorkout.length)]
+                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
+                 clothing = moderateWorkout[Math.floor(Math.random() * moderateWorkout.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Lazy':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = moderateLazy[Math.floor(Math.random() * moderateLazy.length)]
+                clothing = moderateLazy[Math.floor(Math.random() * moderateLazy.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)]
+                clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             default:
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)]
+                clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
     } else { // Hot 
         switch (occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = hotFormal[Math.floor(Math.random() * hotFormal.length)]
+                clothing = hotFormal[Math.floor(Math.random() * hotFormal.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Business Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = hotBusinessCasual[Math.floor(Math.random() * hotBusinessCasual.length)]
+                clothing = hotBusinessCasual[Math.floor(Math.random() * hotBusinessCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Workout':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = hotWorkout[Math.floor(Math.random() * hotWorkout.length)]
+                clothing = hotWorkout[Math.floor(Math.random() * hotWorkout.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Lazy':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = hotLazy[Math.floor(Math.random() * hotLazy.length)]
+                clothing = hotLazy[Math.floor(Math.random() * hotLazy.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)]
+                clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             default:
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)]
+                clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
     }
@@ -377,22 +396,40 @@ function cleanList(listOne, listTwo) {
 
 async function accuweather(conv, location, city, gender, occasion) {
     console.log(location);
+    var wind = 18;
+    var precipitation = false;
+    var temp = 50;
     await axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&language=en-us&details=true&metric=false`)
         .then((result) => {
             console.log(result.data);
             // Pass this to what to what to wear along with other data from entities city, gender, and occasion.
             conv.ask("HEY");
-            console.log(result.DailyForecasts[0].RealFeelTemperature);
+            console.log(result.data.DailyForecasts[0].AirAndPollen);
+            console.log(result.data.DailyForecasts[0]);
+            console.log(result.data.DailyForecasts[0].RealFeelTemperature);
+
+            console.log(result.data.DailyForecasts[0].RealFeelTemperature.Minimum);
+            try {
+                temp = (result.data.DailyForecasts[0].RealFeelTemperature.Minimum.Value + result.data.DailyForecasts[0].RealFeelTemperature.Maximum.Value) / 2;
+            } catch (err) {
+                console.log(`Issue getting average of high and low feels like! Error: ${err}`);
+                temp = 50;
+            }
         })
         .catch((error) => {
             console.log("Problems connecting with AccuWeather");
             console.log(error);
         });
+    console.log(temp);
+    if (!temp) {
+        console.log("Temperature was not correctly calculated.");
+        temp = 50;
+    }
     return decideAndStateOutfit(conv, city, gender, occasion, temp, wind);
 }
 
 async function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
-    console.log(`THE LAT IS ${lat}`)
+    console.log(`THE LAT IS ${lat}`);
     var url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`;
     console.log(url);
     var locationKey = "349291"; // Defaults to Omaha
@@ -431,9 +468,9 @@ app.intent('Permission', (conv) => {
     };
     conv.ask(new Permission(options));
     conv.ask(new Suggestions([
-        'Yes', 
+        'Yes',
         'No'
-      ]));
+    ]));
 });
 app.intent('Permission Handler', (conv, params, confirmationGranted) => {
     const { location } = conv.device;
