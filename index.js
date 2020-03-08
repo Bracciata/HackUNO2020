@@ -109,6 +109,7 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
         }
     }
 });
+
 function geoCityToCoords(conv, city) {
 
     axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${city}}&key=AIzaSyDRzIANAmqLQ3Dyl5yJzuy49oJBzlmhBQA`)
@@ -120,6 +121,7 @@ function geoCityToCoords(conv, city) {
             getLocationIdForAccuweather(conv, city, lat, lng);
         });
 }
+
 function decideAndStateOutfit(agent) {
     // TODO: Figure this code out...
     app.intent('Wear', (conv) => {
@@ -157,8 +159,9 @@ function decideAndStateOutfit(agent) {
     const removedArticlesInWind = ['dress', 'skirt'];
     const removedArticlesMale = ['skirt', 'leggings', 'dress', 'blouse'];
     const removedArticlesFemale = ['tuxedo'];
+    const removedArticlesBoth = ['skirt', 'leggings', 'dress', 'blouse', 'tuxedo'];
 
-    if (agent.parameters.gender != 'female') {
+    if (agent.parameters.gender == 'male') {
         coldFormal = cleanList(coldFormal, removedArticlesMale);
         moderateFormal = cleanList(moderateFormal, removedArticlesMale);
         hotFormal = cleanList(hotFormal, removedArticlesMale);
@@ -174,7 +177,40 @@ function decideAndStateOutfit(agent) {
         coldCasual = cleanList(coldCasual, removedArticlesMale);
         moderateCasual = cleanList(moderateCasual, removedArticlesMale);
         hotCasual = cleanList(hotCasual, removedArticlesMale);
+    } else if (agent.parameters.gender == 'female') {
+        coldFormal = cleanList(coldFormal, removedArticlesFemale);
+        moderateFormal = cleanList(moderateFormal, removedArticlesFemale);
+        hotFormal = cleanList(hotFormal, removedArticlesFemale);
+        coldBusinessCasual = cleanList(coldBusinessCasual, removedArticlesFemale);
+        moderateBusinessCasual = cleanList(moderateBusinessCasual, removedArticlesFemale);
+        hotBusinessCasual = cleanList(hotBusinessCasual, removedArticlesFemale);
+        coldLazy = cleanList(coldLazy, removedArticlesFemale);
+        moderateLazy = cleanList(moderateLazy, removedArticlesFemale);
+        hotLazy = cleanList(hotLazy, removedArticlesFemale);
+        coldWorkout = cleanList(coldWorkout, removedArticlesFemale);
+        moderateWorkout = cleanList(moderateWorkout, removedArticlesFemale);
+        hotWorkout = cleanList(hotWorkout, removedArticlesFemale);
+        coldCasual = cleanList(coldCasual, removedArticlesFemale);
+        moderateCasual = cleanList(moderateCasual, removedArticlesFemale);
+        hotCasual = cleanList(hotCasual, removedArticlesFemale);
+    } else {
+        coldFormal = cleanList(coldFormal, removedArticlesBoth);
+        moderateFormal = cleanList(moderateFormal, removedArticlesBoth);
+        hotFormal = cleanList(hotFormal, removedArticlesBoth);
+        coldBusinessCasual = cleanList(coldBusinessCasual, removedArticlesBoth);
+        moderateBusinessCasual = cleanList(moderateBusinessCasual, removedArticlesBoth);
+        hotBusinessCasual = cleanList(hotBusinessCasual, removedArticlesBoth);
+        coldLazy = cleanList(coldLazy, removedArticlesBoth);
+        moderateLazy = cleanList(moderateLazy, removedArticlesBoth);
+        hotLazy = cleanList(hotLazy, removedArticlesBoth);
+        coldWorkout = cleanList(coldWorkout, removedArticlesBoth);
+        moderateWorkout = cleanList(moderateWorkout, removedArticlesBoth);
+        hotWorkout = cleanList(hotWorkout, removedArticlesBoth);
+        coldCasual = cleanList(coldCasual, removedArticlesBoth);
+        moderateCasual = cleanList(moderateCasual, removedArticlesBoth);
+        hotCasual = cleanList(hotCasual, removedArticlesBoth);
     }
+
     if (wind >= 20) {
         coldFormal = cleanList(coldFormal, removedArticlesInWind);
         moderateFormal = cleanList(moderateFormal, removedArticlesInWind);
@@ -193,6 +229,7 @@ function decideAndStateOutfit(agent) {
         hotCasual = cleanList(hotCasual, removedArticlesInWind);
 
     }
+    
     // TODO: consider checking day's high and low
     // TODO: temp should put emphasis on feels like
     if (temp <= 40) { // Cold 
