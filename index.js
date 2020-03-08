@@ -250,7 +250,7 @@ function decideAndStateOutfit(conv) {
 
     var chosenIntro; 
     var clothing; 
-    if (temp <= 40) { // Cold 
+    if (temp <= conv.storage.coldPref) { // Cold 
         switch (agent.parameters.occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
@@ -282,7 +282,7 @@ function decideAndStateOutfit(conv) {
                 clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
-    } else if (temp <= 68) { // Moderate
+    } else if (temp <= conv.storage.modPref) { // Moderate
         switch (agent.parameters.occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
