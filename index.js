@@ -74,7 +74,7 @@ app.intent('Check Preferences', (conv) => {
                 conv.ask(`Your current hot preference is ${conv.user.storage.hotPref}`);
             }
         } else {
-            conv.close(`Would you like to set your preference?`)
+            conv.close(`Would you like to set your preference?`);
             conv.ask(new Suggestions([
                 'Yes', 
                 'No'
@@ -290,96 +290,96 @@ function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
         switch (occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = coldFormal[Math.floor(Math.random() * coldFormal.length)]
+                clothing = coldFormal[Math.floor(Math.random() * coldFormal.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Business Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = coldBusinessCasual[Math.floor(Math.random() * coldBusinessCasual.length)]
+                clothing = coldBusinessCasual[Math.floor(Math.random() * coldBusinessCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Workout':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = coldWorkout[Math.floor(Math.random() * coldWorkout.length)]
+                clothing = coldWorkout[Math.floor(Math.random() * coldWorkout.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Lazy':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = coldLazy[Math.floor(Math.random() * coldLazy.length)]
+                clothing = coldLazy[Math.floor(Math.random() * coldLazy.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)]
+                clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             default:
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)]
+                clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
     } else if (temp <= conv.user.storage.modPref) { // Moderate
         switch (occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = moderateFormal[Math.floor(Math.random() * moderateFormal.length)]
+                clothing = moderateFormal[Math.floor(Math.random() * moderateFormal.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Business Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = moderateBusinessCasual[Math.floor(Math.random() * moderateBusinessCasual.length)]
+                clothing = moderateBusinessCasual[Math.floor(Math.random() * moderateBusinessCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Workout':
-                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                var clothing = moderateWorkout[Math.floor(Math.random() * moderateWorkout.length)]
+                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
+                 clothing = moderateWorkout[Math.floor(Math.random() * moderateWorkout.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Lazy':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = moderateLazy[Math.floor(Math.random() * moderateLazy.length)]
+                clothing = moderateLazy[Math.floor(Math.random() * moderateLazy.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)]
+                clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             default:
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)]
+                clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
     } else { // Hot 
         switch (occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = hotFormal[Math.floor(Math.random() * hotFormal.length)]
+                clothing = hotFormal[Math.floor(Math.random() * hotFormal.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Business Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = hotBusinessCasual[Math.floor(Math.random() * hotBusinessCasual.length)]
+                clothing = hotBusinessCasual[Math.floor(Math.random() * hotBusinessCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Workout':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = hotWorkout[Math.floor(Math.random() * hotWorkout.length)]
+                clothing = hotWorkout[Math.floor(Math.random() * hotWorkout.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Lazy':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = hotLazy[Math.floor(Math.random() * hotLazy.length)]
+                clothing = hotLazy[Math.floor(Math.random() * hotLazy.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)]
+                clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             default:
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)]
+                clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
     }
@@ -412,7 +412,7 @@ async function accuweather(conv, location, city, gender, occasion) {
 
             console.log(result.data.DailyForecasts[0].RealFeelTemperature.Minimum);
             try {
-                temp = (result.data.DailyForecasts[0].RealFeelTemperature.Minimum.value + result.data.DailyForecasts[0].RealFeelTemperature.Maximum.value) / 2;
+                temp = (result.data.DailyForecasts[0].RealFeelTemperature.Minimum.Value + result.data.DailyForecasts[0].RealFeelTemperature.Maximum.Value) / 2;
             } catch (err) {
                 console.log(`Issue getting average of high and low feels like! Error: ${err}`);
                 temp = 50;
@@ -424,13 +424,13 @@ async function accuweather(conv, location, city, gender, occasion) {
     console.log(temp);
     if (!temp) {
         console.log("Temperature was not correctly calculated.");
-        temp = 50
+        temp = 50;
     }
     return decideAndStateOutfit(conv, city, gender, occasion, temp, wind);
 }
 
 async function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
-    console.log(`THE LAT IS ${lat}`)
+    console.log(`THE LAT IS ${lat}`);
     var url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`;
     console.log(url);
     var locationKey = "349291"; // Defaults to Omaha
