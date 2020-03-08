@@ -10,10 +10,10 @@ app.intent('Default Welcome Intent', (conv) => {
     // Call to set default preferences.
     initialStartup(conv);
     conv.ask(`${chosenGreeting}`);
-  conv.ask(new Suggestions([
-    'What do I wear today?',
-	'What do I wear?'
-  ]));
+    conv.ask(new Suggestions([
+        'What do I wear today?',
+        'What do I wear?'
+    ]));
 });
 app.intent('Default Fallback Intent', (conv) => {
     conv.data.fallbackCount++;
@@ -24,9 +24,9 @@ app.intent('Default Fallback Intent', (conv) => {
         var chosenCloserQuestion = closerQuestions[Math.floor(Math.random() * closerQuestions.length)];
         conv.ask(`${chosenCloserQuestion}`);
         conv.ask(new Suggestions([
-            'Yes', 
+            'Yes',
             'No'
-          ]));
+        ]));
     } else {
         conv.contexts.set(DONE_YES_NO_CONTEXT, 5);
         var closers = ['I am struggling to understand right now, lets talk again soon!', 'I don\'t understand what you want right now, lets talk again soon!', 'I am struggling to understand right now, ask me again!', 'I don\'t understand what you want right now, ask me again!'];
@@ -38,9 +38,9 @@ app.intent('Set Gender', (conv, { "gender": gender }) => {
     conv.ask(`What do you identify as?`);
     conv.data.gender = gender;
     conv.ask(new Suggestions([
-        'Male', 
+        'Male',
         'Female'
-      ]));
+    ]));
 });
 app.intent('Set Temperature Preferences', (conv, { "temperature": temperature, "conditions": condition }) => {
     initialStartup(conv);
@@ -53,9 +53,9 @@ app.intent('Set Temperature Preferences', (conv, { "temperature": temperature, "
     }
     conv.ask(`Do you want me to save your preferences?`);
     conv.ask(new Suggestions([
-        'Yes', 
+        'Yes',
         'No'
-      ]));
+    ]));
 });
 app.intent('Check Preferences', (conv) => {
     initialStartup(conv);
@@ -76,9 +76,9 @@ app.intent('Check Preferences', (conv) => {
         } else {
             conv.close(`Would you like to set your preference?`);
             conv.ask(new Suggestions([
-                'Yes', 
+                'Yes',
                 'No'
-              ]));
+            ]));
         }
     } else {
         conv.close(`We do not have permission to set your preferences. Please sign in to become verified.`);
@@ -118,7 +118,7 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
             conv.ask(new Suggestions([
                 'Yes, you do',
                 'No, you don\'t'
-              ]));
+            ]));
         }
     }
 });
@@ -331,8 +331,8 @@ function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Workout':
-                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
-                 clothing = moderateWorkout[Math.floor(Math.random() * moderateWorkout.length)];
+                chosenIntro = intro[Math.floor(Math.random() * intro.length)];
+                clothing = moderateWorkout[Math.floor(Math.random() * moderateWorkout.length)];
                 conv.ask(`${chosenIntro} ${clothing}.`);
                 break;
             case 'Lazy':
@@ -388,15 +388,15 @@ function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
 function cleanList(listOne, listTwo) {
     for (var i = 0; i < listOne.length; ++i) {
         for (var j = 0; j < listTwo.length; ++j) {
-            if (listOne[i].toLowerCase().includes(listTwo[j].toLowerCase())||listTwo[j].toLowerCase().includes(listOne[i].toLowerCase())) {
-                try{
-              	listOne.splice(i, 1);
-                                break;
-}
-              
-              catch(err){
-              listOne = cleanList(listOne, listTwo);
-              }
+            if (listOne[i].toLowerCase().includes(listTwo[j].toLowerCase()) || listTwo[j].toLowerCase().includes(listOne[i].toLowerCase())) {
+                try {
+                    listOne.splice(i, 1);
+                    break;
+                }
+
+                catch (err) {
+                    listOne = cleanList(listOne, listTwo);
+                }
             }
         }
     }
