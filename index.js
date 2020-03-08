@@ -9,7 +9,6 @@ app.intent('Default Welcome Intent', (conv) => {
     var chosenGreeting = greetings[Math.floor(Math.random() * greetings.length)];
     conv.ask(`${chosenGreeting}`);
   conv.ask(new Suggestions([
-    'What do I wear now?',
     'What do I wear today?',
 	'What do I wear?'
   ]));
@@ -21,8 +20,11 @@ app.intent('Default Fallback Intent', (conv) => {
         conv.contexts.set(DONE_YES_NO_CONTEXT, 5);
         var closerQuestions = ['Did you decide what you will wear already?', 'Did you pick out an outfit?', 'Did you get an outfit selected?', 'Did you get an outflit picked out?']; // Add
         var chosenCloserQuestion = closerQuestions[Math.floor(Math.random() * closerQuestions.length)];
-
         conv.ask(`${chosenCloserQuestion}`);
+        conv.ask(new Suggestions([
+            'Yes', 
+            'No'
+          ]));
     } else {
         conv.contexts.set(DONE_YES_NO_CONTEXT, 5);
         var closers = ['I am struggling to understand right now, lets talk again soon!', 'I don\'t understand what you want right now, lets talk again soon!', 'I am struggling to understand right now, ask me again!', 'I don\'t understand what you want right now, ask me again!'];
@@ -33,6 +35,10 @@ app.intent('Default Fallback Intent', (conv) => {
 app.intent('Set Gender', (conv, { "gender": gender }) => {
     conv.ask(`What do you identify as?`);
     conv.data.gender = gender;
+    conv.ask(new Suggestions([
+        'Male', 
+        'Female'
+      ]));
 });
 app.intent('Set Temperature Preferences', (conv, { "temperature": temperature, "conditions": condition }) => {
     initialStartup(conv);
@@ -44,6 +50,10 @@ app.intent('Set Temperature Preferences', (conv, { "temperature": temperature, "
         conv.data.hotPref = temperature;
     }
     conv.ask(`Do you want me to save your preferences?`);
+    conv.ask(new Suggestions([
+        'Yes', 
+        'No'
+      ]));
 });
 app.intent('Check Preferences', (conv) => {
     initialStartup(conv);
@@ -63,6 +73,10 @@ app.intent('Check Preferences', (conv) => {
             }
         } else {
             conv.close(`Would you like to set your preference?`)
+            conv.ask(new Suggestions([
+                'Yes', 
+                'No'
+              ]));
         }
     } else {
         conv.close(`We do not have permission to set your preferences. Please sign in to become verified.`);
@@ -97,11 +111,11 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
             getLocationIdForAccuweather(conv, latitude, longitude, city, gender, occasion);
         }
         else {
-            conv.ask("You will need to tell me that I have your premission to get your location");
+            conv.ask("Do I have your premission to get your location?");
             // ADD SUGGESTION HERE
             conv.ask(new Suggestions([
-                'Yes',
-                'No'
+                'Yes, you do',
+                'No, you don\'t'
               ]));
         }
     }
