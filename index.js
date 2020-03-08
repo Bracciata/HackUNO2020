@@ -7,7 +7,7 @@ const functions = require('firebase-functions');
 const app = dialogflow({ debug: true });
 
 app.intent('Default Welcome Intent', (conv) => {
-    var greetings = ['Hey I am UNO, how can I help you today?']; // Add here
+    var greetings = ['Hey I am UNO, how can I help you today?', 'Welcome! My name is Uno, how can I help you today?', 'Welcome! It\'s Uno, how can I help you today?', 'Greetings! My name is Uno, how can I help you today?', 'Greetings! It\'s Uno, how can I help you today?', 'Salutations! My name is Uno, how can I help you today?', 'Salutations! It\'s Uno, how can I help you today?', 'Howdy! My name is Uno, how can I help you today?', 'Howdy! It\'s Uno, how can I help you today?', 'Hello! My name is Uno, how can I help you today?', 'Hello! It\'s Uno, how can I help you today?', 'Hi! My name is Uno, how can I help you today?', 'Hi! It\'s Uno, how can I help you today?']; 
     var chosenGreeting = greetings[Math.floot(Math.random() * greetings.length)];
     conv.ask(`${chosenGreeting}.`);
 });
@@ -16,13 +16,13 @@ app.intent('Default Fallback Intent', (conv) => {
     // Provide two prompts before ending game
     if (conv.data.fallbackCount === 1) {
         conv.contexts.set(DONE_YES_NO_CONTEXT, 5);
-        var closerQuestions = ['Did you decide what you will wear already?']; // Add
+        var closerQuestions = ['Did you decide what you will wear already?', 'Did you pick out an outfit?', 'Did you get an outfit selected?', 'Did you get an outflit picked out?']; // Add
         var chosenCloserQuestion = closerQuestions[Math.floot(Math.random() * closerQuestions.length)];
 
         conv.ask(`${chosenCloserQuestion}`);
     } else {
         conv.contexts.set(DONE_YES_NO_CONTEXT, 5);
-        var closers = ['I am struggling to understand right now, lets talk again soon!']; // Add to this
+        var closers = ['I am struggling to understand right now, lets talk again soon!', 'I don\'t understand what you want right now, lets talk again soon!', 'I am struggling to understand right now, ask me again!', 'I don\'t understand what you want right now, ask me again!']; 
         var chosenCloser = closers[Math.floot(Math.random() * closers.length)];
         conv.close(`${chosenCloser}`);
     }
@@ -124,32 +124,32 @@ function decideAndStateOutfit(agent) {
         }
     });
 
+    const intros = ['I recommend you wear a ', 'As your friend, I recommend you wear a', 'As your stylist, I recommend you wear a ', 'Based off of AccuWeather and Google Data, I recommend you wear a ', 'Based off of data sourced from AccuWeather, I recommend you wear a ', 'According to my calculations, I recommend you wear a ', 'You should wear a ', 'As your friend, I think you should wear a ', 'As your stylist, I think you should wear a ', 'Based off of AccuWeather and Google data, I think you should wear a ', 'Based off of data sourced from Accuweather, I think you should wear a ', 'According to my calculations, I think you should wear a ', 'As your friend, I think you would look great in a ', 'As your stylist, I think you would look great in a ', 'Based off of AccuWeather and Google data, I think you would look great in a ', Based off of data sourced from AccuWeather, I think you would look great in a ', 'According to my calculations, I think you would look great in a ', 'As your friend, I think It would great idea to wear a ', 'As your stylist, I think It would great idea to wear a ', 'Based off of AccuWeather and Google data, I think It would great idea to wear a ', Based off of data sourced from AccuWeather, I think It would great idea to wear a ', 'According to my calculations, I think It would great idea to wear a ', 'As your friend, I think It would fantastic idea to wear a ', 'As your stylist, I think It would fantastic idea to wear a ', 'Based off of AccuWeather and Google data, I think It would fantastic idea to wear a ', Based off of data sourced from AccuWeather, I think It would fantastic idea to wear a ', 'According to my calculations, I think It would fantastic idea to wear a ', 'As your friend, I think It would lovely idea to wear a ', 'As your stylist, I think It would lovely idea to wear a ', 'Based off of AccuWeather and Google data, I think It would lovely idea to wear a ', Based off of data sourced from AccuWeather, I think It would lovely idea to wear a ', 'According to my calculations, I think It would lovely idea to wear a ', 'As your friend, I personally recommend you wear a ', 'As your stylist, I personally recommend you wear a ', 'Based off of AccuWeather and Google data, I personally recommend you wear a ', 'Based off of data sourced from AccuWeather, I personally recommend you wear a ', 'According to my calculations, I personally recommend you wear a ', 'As your friend, I think you should wear', 'As your stylist, I think you should wear', 'Based off of AccuWeather and Google data, I think you should wear', 'Based off of data sourced from AccuWeather, I think you should wear', 'According to my calculations, I think you should wear'];
 
-
-    const intros = ['I recommend you wear', 'You should wear'];
-
-    const coldFormal = ['suit'];
-    const moderateFormal = ['suit', 'dress'];
-    const hotFormal = ['suit', 'dress', 'skirt suit'];
-
-    const coldBusinessCasual = ['button up shirt and slacks', 'button up shirt and khakis', 'sweater and khakis'];
-    const moderateBusinessCasual = ['button up shirt and slacks', 'button up shirt and khakis'];
-    const hotBusinessCasual = ['slacks and a button up shirt', 'a skirt and a button up shirt', 'button up shirt and khakis'];
-
+    const coldFormal = ['suit', 'black suit', 'gray suit', 'tan suit', 'dress with tights', 'tuxedo', 'floor length dress'];
+    const moderateFormal = ['suit', 'black suit', 'gray suit', 'tan suit', 'dress with tights', 'tuxedo', 'floor length dress', 'dress'];
+    const hotFormal = ['suit', 'black suit', 'gray suit', 'tan suit', 'dress', 'skirt suit', 'black skirt suit', 'gray skirt suit', 'tan skirt suit'];
+    
+    const coldBusinessCasual = ['button up shirt and slacks', 'button up shirt and khakis', 'sweater and khakis', 'sweater and slacks', 'blouse and khakis', 'dress shirt and slacks', 'dress shirt and khakis'];
+    const moderateBusinessCasual = ['button up shirt and pencil skirt', 'dress shirt and pencil skirt', 'blouse and pencil skirt', 'button up shirt and slacks', 'button up shirt and khakis', 'sweater and khakis', 'sweater and slacks', 'blouse and khakis', 'dress shirt and slacks', 'dress shirt and khakis'];
+    const hotBusinessCasual = ['slacks and a button up shirt', 'skirt and a button up shirt', 'button up shirt and khakis', 'button up shirt and pencil skirt', 'dress shirt and pencil skirt', 'blouse and pencil skirt', 'button up shirt and slacks', 'blouse and khakis', 'dress shirt and slacks', 'dress shirt and khakis'];
+    
     const coldWorkout = ['quarter zip with leggings', 'quarter zip with sweatpants', 'sweatshirt with leggings', 'sweatshirt with sweatpants', 'long sleeve t-shirt with leggings', 'long sleeve t-shirt with sweatpants'];
     const moderateWorkout = ['quarter zip with leggings', 'quarter zip with sweatpants', 'long sleeve t-shirt with leggings', 'long sleeve t-shirt with sweatpants', 'short sleeve t-shirt with leggings', 'short sleeve t-shirt with sweatpants'];
     const hotWorkout = ['short sleeve t-shirt with leggings', 'short sleeve t-shirt with athletic shorts', 'tank top with leggings', 'tank top with athletic shorts'];
-
-    const coldLazy = ['sweatshirt with sweatpants', 'pajamas', 't-shirt and sweatpants with a coat', 'sweatshirt with leggings', 't-shirt and sweatpants with a coat'];
+    
+    const coldLazy = ['sweatshirt with sweatpants', 'pajamas', 'long sleeve t-shirt and sweatpants', 'sweatshirt with leggings', 'long sleeve t-shirt and sweatpants'];
     const moderateLazy = ['sweatshirt with sweatpants', 'pajamas', 't-shirt and sweatpants with a jacket'];
-    const hotLazy = ['t-shirt with athletic shorts', 'tank top with athletic shorts'];
-
-    const coldCasual = ['hoodie with jeans and a coat', 'sweater and jeans'];
-    const moderateCasual = ['hoodie with jeans'];
-    const hotCasual = ['t-shirt and shorts'];
-
+    const hotLazy = ['t-shirt with athletic shorts', 'tank top with athletic shorts', 'pajamas'];
+    
+    const coldCasual = ['hoodie with jeans', 'sweater and jeans', 'sweater and leggings', 'sweatshirt and leggings', 'sweatshirt and jeans', 'long sleeve t-shirt and leggings', 'long sleeve t-shirt and jeans', 'long sleeve shirt and leggings', 'long sleeve shirt and jeans'];
+    const moderateCasual = ['hoodie with jeans', 'hoodie and leggings', 't-shirt and jeans with a jacket', 't-shirt and leggings with a jacket'];
+    const hotCasual = ['t-shirt and shorts', 'tank top and shorts', 't-shirt and skirt', 'tank top and skirt'];
+    
     const removedArticlesInWind = ['dress', 'skirt'];
-    const removedArticlesMale = ['skirt', 'leggings', 'dress'];
+    const removedArticlesMale = ['skirt', 'leggings', 'dress', 'blouse'];
+    const removedArticlesFemale = ['tuxedo'];
+
     if (agent.parameters.gender != 'female') {
         coldFormal = cleanList(coldFormal, removedArticlesMale);
         moderateFormal = cleanList(moderateFormal, removedArticlesMale);
@@ -187,7 +187,6 @@ function decideAndStateOutfit(agent) {
     }
     // TODO: consider checking day's high and low
     // TODO: temp should put emphasis on feels like
-    // TODO: remove skirt, leggings, dress items from lists
     if (temp <= 40) { // Cold 
         switch (agent.parameters.occasion) {
             case 'Formal':
@@ -211,11 +210,11 @@ function decideAndStateOutfit(agent) {
                 var clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             default:
-            // do something
+                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)]
+                conv.ask(`${chosenIntro} ${clothing}.`);
         }
     } else if (temp <= 68) { // Moderate
-
-
         switch (agent.parameters.occasion) {
             case 'Formal':
                 var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
@@ -238,7 +237,6 @@ function decideAndStateOutfit(agent) {
                 var clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             default:
-                // do something
                 var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
                 var clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
@@ -267,13 +265,13 @@ function decideAndStateOutfit(agent) {
                 var clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             default:
-                // do something
                 var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
                 var clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
     }
 }
+
 function cleanList(listOne, listTwo) {
     for (var i = 0; i < listOne.length; ++i) {
         for (var j = 0; j < listTwo.length; ++j) {
