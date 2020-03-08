@@ -1,7 +1,7 @@
 'use strict';
 const axios = require('axios');
 
-const { dialogflow ,Permission, Suggestions} = require('actions-on-google');
+const { dialogflow, Permission, Suggestions } = require('actions-on-google');
 const functions = require('firebase-functions');
 
 const app = dialogflow({ debug: true });
@@ -92,20 +92,20 @@ app.intent('Save Preferences', (conv) => {
     }
     agent.add(conv);
 });
-app.intent('Wear', (conv, { "geo-city": city ,"gender":gender,"occasion":occasion}) => {
+app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occasion }) => {
     console.log(`City is ${city}`);
     if (conv.arguments.get(city) != "") {
-        geoCityToCoords(conv, city,gender,occasion);
+        geoCityToCoords(conv, city, gender, occasion);
     } else {
         // TODO: ask for location permissions through google home
         //TODO CHECK IF YOU HAVE PERMISSIONS AND ONLY CALL IF YOU DO NOT
-        const {location} = conv.device;
-        if(location){
+        const { location } = conv.device;
+        if (location) {
             const { latitude, longitude } = location.coordinates;
-            getLocationIdForAccuweather(conv,latitude,longitude);
+            getLocationIdForAccuweather(conv, latitude, longitude, city, gender, occasion);
         }
-        else{
-            permissionChecker(conv,city,gender,occasion);
+        else {
+            permissionChecker(conv, city, gender, occasion);
         }
     }
 });
@@ -293,22 +293,23 @@ function cleanList(listOne, listTwo) {
     }
     return listOne;
 }
-function accuweather(conv, location) {
+function accuweather(conv, location, city, gender, occasion) {
     console.log(location);
     return axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&language=en-us&details=true&metric=false`)
         .then((result) => {
             console.log(result.data);
+            // Pass this to what to what to wear along with other data from entities city, gender, and occasion.
         })
         .catch((result) => {
             console.log("We screwed up");
         });
 }
 
-function getLocationIdForAccuweather(conv, lat, long) {
+function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
     return axios.get(`http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`)
         .then((result) => {
             console.log(result.headers['x-location-key']);
-            accuweather(agent, result.headers['x-location-key'].toString());
+            accuweather(conv, result.headers['x-location-key'].toString(), city, gender, occasion);
         })
         .catch((error) => {
             console.log("We screwed up, no location :(");
@@ -316,46 +317,40 @@ function getLocationIdForAccuweather(conv, lat, long) {
         });
 }
 app.intent('Subscribe to Daily Updates', (conv) => {
-  console.log("HERE");
-    conv.ask("Cool I will start giving you daily updates!"); // TODO: MAke this a list
-   /* conv.ask(new RegisterUpdate({
-        intent: 'Wear',
-        frequency: 'DAILY',
-    }));*/ //TODO finalize this implementation
+    console.log("HERE");
+    conv.ask("Cool I will start giving you daily updates!"); // TODO: Make this a list
+    /* conv.ask(new RegisterUpdate({
+         intent: 'Wear',
+         frequency: 'DAILY',
+     }));*/ //TODO finalize this implementation
 });
 app.intent('Permission', (conv) => {
-  console.log("HEYTOMMAYYYYYY");
     let context;
     // Location permissions only work for verified users
     // https://developers.google.com/actions/assistant/guest-users
-  	let permissions;  
-  if (conv.user.verification === 'VERIFIED') {
-      // Could use DEVICE_COARSE_LOCATION instead for city, zip code
-       permissions=['DEVICE_PRECISE_LOCATION'];
-    context = 'Will you let me see your location? ';
+    let permissions;
+    if (conv.user.verification === 'VERIFIED') {
+        permissions = ['DEVICE_PRECISE_LOCATION'];
+        context = 'Will you let me see your location? ';
     }
     const options = {
-      context,
-      permissions,
+        context,
+        permissions,
     };
     conv.ask(new Permission(options));
-  });
-  // [END df_js_permission_reason]
-  
-  // [START df_js_permission_accepted]
-  app.intent('Permission Handler', (conv, params, confirmationGranted) => {
-    // Also, can access latitude and longitude
-    // const { latitude, longitude } = location.coordinates;
-    const {location} = conv.device;
+});
+
+app.intent('Permission Handler', (conv, params, confirmationGranted) => {
+    const { location } = conv.device;
     if (confirmationGranted && location) {
-      console.log("ACCEPTED");
+        console.log("Got permissions to get location.");
         conv.add("Thanks, reccomendation coming right up!")
-      // Get accuweather
+        const { latitude, longitude } = location.coordinates;
+        getLocationIdForAccuweather(conv, latitude, longitude,"","","");
     } else {
-      conv.ask(`Looks like I can't get your information.`);
+        conv.ask(`Looks like I can't get your information.`);
     }
-  });
-  // [END df_js_permission_accepted]
+});
 
 
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest(app);
