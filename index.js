@@ -1,7 +1,7 @@
 'use strict';
 const axios = require('axios');
 
-const { dialogflow } = require('actions-on-google');
+const { dialogflow ,Permission, Suggestions} = require('actions-on-google');
 const functions = require('firebase-functions');
 
 const app = dialogflow({ debug: true });
@@ -317,12 +317,14 @@ app.intent('Subscribe to Daily Updates', (conv) => {
 });
 app.intent('Permission', (conv) => {
   console.log("HEYTOMMAYYYYYY");
-    let context = 'Will you let me see your location? ';
+    let context;
     // Location permissions only work for verified users
     // https://developers.google.com/actions/assistant/guest-users
-    if (conv.user.verification === 'VERIFIED') {
+  	let permissions;  
+  if (conv.user.verification === 'VERIFIED') {
       // Could use DEVICE_COARSE_LOCATION instead for city, zip code
-      permissions.push('DEVICE_PRECISE_LOCATION');
+       permissions=['DEVICE_PRECISE_LOCATION'];
+    context = 'Will you let me see your location? ';
     }
     const options = {
       context,
