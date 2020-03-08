@@ -82,7 +82,7 @@ app.intent('Save Preferences', (conv) => {
         conv.close(`I can't save that now, but we can remember them next time!`);
     }
 });
-app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occasion }) => {
+app.intent('Wear', async conv { "geo-city": city, "gender": gender, "occasion": occasion })  => {
     console.log(`City is ${city}`);
     if (city != "") {
         return geoCityToCoords(conv, city, gender, occasion);
@@ -92,7 +92,7 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
         const { location } = conv.device;
         if (location) {
             const { latitude, longitude } = location.coordinates;
-            return getLocationIdForAccuweather(conv, latitude, longitude, city, gender, occasion);
+            await getLocationIdForAccuweather(conv, latitude, longitude, city, gender, occasion);
         }
         else {
             // CALL THE INTENT? permissionChecker(conv, city, gender, occasion);
@@ -100,14 +100,14 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
     }
 });
 
-function geoCityToCoords(conv, city, gender, occasion) {
+async function geoCityToCoords(conv, city, gender, occasion) {
     return axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${city}}&key=AIzaSyDRzIANAmqLQ3Dyl5yJzuy49oJBzlmhBQA`)
         .then((result) => {
             console.log(result);
             const lat = result.data.results[0].geometry.location.lat;
             const lng = result.data.results[0].geometry.location.lng;
             console.log(`The lattitude is ${lat}  and longitude is ${lng}`);
-            return getLocationIdForAccuweather(conv, lat, lng, city,gender, occasion);
+            await getLocationIdForAccuweather(conv, lat, lng, city,gender, occasion);
         });
 }
 
@@ -328,14 +328,13 @@ function cleanList(listOne, listTwo) {
         for (var j = 0; j < listTwo.length; ++j) {
             if (listOne[i].includes(listTwo[j])) {
                 listOne.splice(i, 1);
-
             }
         }
     }
     return listOne;
 }
 
-function accuweather(conv, location, city, gender, occasion) {
+async function accuweather(conv, location, city, gender, occasion) {
     console.log(location);
     return axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&language=en-us&details=true&metric=false`)
         .then((result) => {
@@ -348,12 +347,12 @@ function accuweather(conv, location, city, gender, occasion) {
         });
 }
 
-function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
+async function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
     console.log(`THE LAT IS ${lat}`)
     return axios.get(`http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`)
         .then((result) => {
             console.log(result.headers['x-location-key']);
-            return accuweather(conv, result.headers['x-location-key'].toString(), city, gender, occasion);
+            await accuweather(conv, result.headers['x-location-key'].toString(), city, gender, occasion);
         })
         .catch((error) => {
             console.log("We screwed up, no location :(");
