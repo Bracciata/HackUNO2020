@@ -293,6 +293,12 @@ function decideAndStateOutfit(agent) {
                 agent.add(`${chosenIntro} ${clothing}.`);
         }
     }
+    
+    if (temp >= 32 && precipitation) { //rain
+        agent.add('It\'s going to rain. Don\'t forget an rainboots and an umbrella or raincoat.');
+    } else if (temp < 32 && precipitation) { //snow
+        agent.add('It\'s going to snow. Don\'t forget a winter coat and boots.')
+    }
 }
 function cleanList(listOne, listTwo) {
     for (var i = 0; i < listOne.length; ++i) {
