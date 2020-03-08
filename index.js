@@ -29,10 +29,15 @@ app.intent('Default Fallback Intent', (conv) => {
 });
 app.intent('Get Gender', (conv, { gender }) => {
     conv.data.gender = gender;
-    conv.ask(`Got it!`);
-    conv.ask(`What do you consider as cold?`);
+    conv.add(`Got it dude!`);
     agent.add(conv);
 });
+app.intent('Temperature Preferences', (conv, { temperature,conditions }) => {
+    if(conditions == "cold"){
+        // check does not exceed moderate.
+    }
+    conv.data[conditions] = temperature;
+
 app.intent('Get Cold Preference', (conv, { coldPref }) => {
     conv.data.coldPref = coldPref;
     conv.ask(`Got it!`);
