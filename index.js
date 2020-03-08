@@ -37,11 +37,11 @@ app.intent('Default Fallback Intent', (conv) => {
 
 // Setting gender preference
 app.intent('Set Gender', (conv, { "gender": gender }) => {
-    conv.ask(`What do you identify as?`);
     conv.data.gender = gender;
+    conv.ask(`Do you want me to save your preferences?`);
     conv.ask(new Suggestions([
-        'Male',
-        'Female'
+        'Yes',
+        'No'
     ]));
 });
 // Setting temperature preferences
@@ -63,6 +63,7 @@ app.intent('Set Temperature Preferences', (conv, { "temperature": temperature, "
 // Checking all avaliable preferences
 app.intent('Check Preferences', (conv) => {
     initialStartup(conv);
+    // Determining if user is verified or a guest
     if (conv.user.verification === 'VERIFIED') {
         if (conv.user.storage.gender || conv.user.storage.coldPref || conv.user.storage.modPref || conv.user.storage.hotPref) {
             if (conv.user.storage.gender) {
@@ -78,29 +79,39 @@ app.intent('Check Preferences', (conv) => {
                 conv.ask(`Your current hot preference is ${conv.user.storage.hotPref}`);
             }
         } else {
-            conv.close(`Would you like to set your preference?`);
+            conv.ask(`Would you like to set your preference?`);
             conv.ask(new Suggestions([
                 'Yes',
                 'No'
             ]));
         }
     } else {
-        conv.close(`We do not have permission to set your preferences. Please sign in to become verified.`);
+        conv.ask(`We do not have permission to set your preferences. Please sign in to become verified.`);
     }
     conv.ask(new Suggestions([
         'Yes',
         'No'
     ]));
 });
-app.intent('Save Preferences', (conv) => {
+
+// Saving Gender Preference
+app.intent('Save Gender Preference', (conv) => {
     if (conv.user.verification === 'VERIFIED') {
         conv.user.storage.gender = conv.data.gender;
+        conv.ask(`Alright, I'll store that for next time.`);
+    } else {
+        conv.ask(`I can't save that now, but we can remember them next time!`);
+    }
+});
+// Saving Temperature Preferences
+app.intent('Save Preferences', (conv) => {
+    if (conv.user.verification === 'VERIFIED') {
         conv.user.storage.coldPref = conv.data.coldPref;
         conv.user.storage.modPref = conv.data.modPref;
         conv.user.storage.hotPref = conv.data.hotPref;
-        conv.close(`Alright, I'll store that for next time. See you then.`);
+        conv.ask(`Alright, I'll store that for next time.`);
     } else {
-        conv.close(`I can't save that now, but we can remember them next time!`);
+        conv.ask(`I can't save that now, but we can remember them next time!`);
     }
 });
 app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occasion }) => {
@@ -127,6 +138,7 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
     }
 });
 
+// Sets default preferences.
 function initialStartup(conv) {
     if (conv.user.verification === 'VERIFIED') {
         if (conv.user.storage.gender || conv.user.storage.coldPref || conv.user.storage.modPref || conv.user.storage.hotPref) {
@@ -159,9 +171,11 @@ function initialStartup(conv) {
     }
 }
 
+// Gets current location's longitude and latitude. 
 async function geoCityToCoords(conv, city, gender, occasion) {
     var lat;
     var lng;
+    // Connecting to maps api
     await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${city}}&key=AIzaSyDRzIANAmqLQ3Dyl5yJzuy49oJBzlmhBQA`)
         .then((result) => {
             console.log(result);
@@ -206,7 +220,7 @@ function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
     const removedArticlesBoth = ['skirt', 'leggings', 'dress', 'blouse', 'tuxedo'];
 
     if (!gender) {
-        gender = conv.user.storage.gender;
+        conv.user.storage.gender;
     }
     if (gender) {
         if (gender == 'male' || conv.storage.gender == 'male') {
