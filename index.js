@@ -176,7 +176,7 @@ function decideAndStateOutfit(conv) {
     const removedArticlesFemale = ['tuxedo'];
     const removedArticlesBoth = ['skirt', 'leggings', 'dress', 'blouse', 'tuxedo'];
 
-    if (agent.parameters.gender == 'male') {
+    if (agent.parameters.gender == 'male' || conv.storage.gender == 'male') {
         coldFormal = cleanList(coldFormal, removedArticlesMale);
         moderateFormal = cleanList(moderateFormal, removedArticlesMale);
         hotFormal = cleanList(hotFormal, removedArticlesMale);
@@ -192,7 +192,7 @@ function decideAndStateOutfit(conv) {
         coldCasual = cleanList(coldCasual, removedArticlesMale);
         moderateCasual = cleanList(moderateCasual, removedArticlesMale);
         hotCasual = cleanList(hotCasual, removedArticlesMale);
-    } else if (agent.parameters.gender == 'female') {
+    } else if (agent.parameters.gender == 'female'|| conv.storage.gender == 'female') {
         coldFormal = cleanList(coldFormal, removedArticlesFemale);
         moderateFormal = cleanList(moderateFormal, removedArticlesFemale);
         hotFormal = cleanList(hotFormal, removedArticlesFemale);
