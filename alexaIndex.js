@@ -1,183 +1,68 @@
-'use strict';
+const Alexa = require('ask-sdk-core');
 const axios = require('axios');
-const { dialogflow, Permission, Suggestions } = require('actions-on-google');
-const functions = require('firebase-functions');
-const app = dialogflow({ debug: true });
+var https = require('https');
 
-app.intent('Default Welcome Intent', (conv) => {
-    var greetings = ['Hey I am UNO, how can I help you today?', 'Welcome! My name is Uno, how can I help you today?', 'Welcome! It\'s Uno, how can I help you today?', 'Greetings! My name is Uno, how can I help you today?', 'Greetings! It\'s Uno, how can I help you today?', 'Salutations! My name is Uno, how can I help you today?', 'Salutations! It\'s Uno, how can I help you today?', 'Howdy! My name is Uno, how can I help you today?', 'Howdy! It\'s Uno, how can I help you today?', 'Hello! My name is Uno, how can I help you today?', 'Hello! It\'s Uno, how can I help you today?', 'Hi! My name is Uno, how can I help you today?', 'Hi! It\'s Uno, how can I help you today?'];
-    var chosenGreeting = greetings[Math.floor(Math.random() * greetings.length)];
-    // Call to set default preferences.
-    initialStartup(conv);
-    conv.ask(`${chosenGreeting}`);
-    conv.ask(new Suggestions([
-        'What do I wear today?',
-        'What do I wear?'
-    ]));
-});
-app.intent('Default Fallback Intent', (conv) => {
-    conv.data.fallbackCount++;
-    // Provide two prompts before ending game
-    if (conv.data.fallbackCount === 1) {
-        conv.contexts.set(DONE_YES_NO_CONTEXT, 5);
-        var closerQuestions = ['Did you decide what you will wear already?', 'Did you pick out an outfit?', 'Did you get an outfit selected?', 'Did you get an outflit picked out?']; // Add
-        var chosenCloserQuestion = closerQuestions[Math.floor(Math.random() * closerQuestions.length)];
-        conv.ask(`${chosenCloserQuestion}`);
-        conv.ask(new Suggestions([
-            'Yes',
-            'No'
-        ]));
-    } else {
-        conv.contexts.set(DONE_YES_NO_CONTEXT, 5);
-        var closers = ['I am struggling to understand right now, lets talk again soon!', 'I don\'t understand what you want right now, lets talk again soon!', 'I am struggling to understand right now, ask me again!', 'I don\'t understand what you want right now, ask me again!'];
-        var chosenCloser = closers[Math.floor(Math.random() * closers.length)];
-        conv.close(`${chosenCloser}`);
-    }
-});
-
-// Setting gender preference
-app.intent('Set Gender', (conv, { "gender": gender }) => {
-    conv.ask(`What do you identify as?`);
-    conv.data.gender = gender;
-    conv.ask(new Suggestions([
-        'Male',
-        'Female'
-    ]));
-});
-// Setting temperature preferences
-app.intent('Set Temperature Preferences', (conv, { "temperature": temperature, "conditions": condition }) => {
-    initialStartup(conv);
-    if (condition === 'cold' && temperature < conv.user.storage.modPref) {
-        conv.data.coldPref = temperature;
-    } else if (condition === 'moderate' && temperature < conv.user.storage.hotPref && temperature > conv.user.storage.coldPref) {
-        conv.data.modPref = temperature;
-    } else if (condition === 'hot' && temperature > conv.user.storage.modPref) {
-        conv.data.hotPref = temperature;
-    }
-    conv.ask(`Do you want me to save your preferences?`);
-    conv.ask(new Suggestions([
-        'Yes',
-        'No'
-    ]));
-});
-// Checking all avaliable preferences
-app.intent('Check Preferences', (conv) => {
-    initialStartup(conv);
-    if (conv.user.verification === 'VERIFIED') {
-        if (conv.user.storage.gender || conv.user.storage.coldPref || conv.user.storage.modPref || conv.user.storage.hotPref) {
-            if (conv.user.storage.gender) {
-                conv.ask(`Your current gender preference is ${conv.user.storage.gender}`);
-            }
-            if (conv.user.storage.coldPref) {
-                conv.ask(`Your current cold preference is ${conv.user.storage.coldPref}`);
-            }
-            if (conv.user.storage.modPref) {
-                conv.ask(`Your current moderate preference is ${conv.user.storage.modPref}`);
-            }
-            if (conv.user.storage.hotPref) {
-                conv.ask(`Your current hot preference is ${conv.user.storage.hotPref}`);
-            }
-        } else {
-            conv.close(`Would you like to set your preference?`);
-            conv.ask(new Suggestions([
-                'Yes',
-                'No'
-            ]));
-        }
-    } else {
-        conv.close(`We do not have permission to set your preferences. Please sign in to become verified.`);
-    }
-    conv.ask(new Suggestions([
-        'Yes',
-        'No'
-    ]));
-});
-app.intent('Save Preferences', (conv) => {
-    if (conv.user.verification === 'VERIFIED') {
-        conv.user.storage.gender = conv.data.gender;
-        conv.user.storage.coldPref = conv.data.coldPref;
-        conv.user.storage.modPref = conv.data.modPref;
-        conv.user.storage.hotPref = conv.data.hotPref;
-        conv.close(`Alright, I'll store that for next time. See you then.`);
-    } else {
-        conv.close(`I can't save that now, but we can remember them next time!`);
-    }
-});
-app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occasion }) => {
-    console.log(`City is ${city}`);
-    if (city != "") {
-        // Location was passed.
-        return geoCityToCoords(conv, city, gender, occasion);
-    } else {
-        // Checks if we can get the devices location and if not tell the user to grant permission.
-        // However, fist check they do not have a home location. TODO: Implement home location.
-        const { location } = conv.device;
-        if (location) {
-            const { latitude, longitude } = location.coordinates;
-            getLocationIdForAccuweather(conv, latitude, longitude, city, gender, occasion);
-        }
-        else {
-            conv.ask("Do I have your premission to get your location?");
-            // ADD SUGGESTION HERE
-            conv.ask(new Suggestions([
-                'Yes, you do',
-                'No, you don\'t'
-            ]));
-        }
-    }
-});
-
-function initialStartup(conv) {
-    if (conv.user.verification === 'VERIFIED') {
-        if (conv.user.storage.gender || conv.user.storage.coldPref || conv.user.storage.modPref || conv.user.storage.hotPref) {
-            if (!conv.user.storage.gender) {
-                conv.user.storage.gender = '';
-            }
-            if (!conv.user.storage.coldPref) {
-                conv.user.storage.coldPref = 40;
-            }
-            if (!conv.user.storage.modPref) {
-                conv.user.storage.modPref = 68;
-            }
-            if (!conv.user.storage.hotPref) {
-                conv.user.storage.hotPref = 80;
-            }
-    } else {
-        if (!conv.data.gender) {
-            conv.data.gender = '';
-        }
-        if (!conv.data.coldPref) {
-            conv.data.coldPref = 40;
-        }
-        if (!conv.data.modPref) {
-            conv.data.modPref = 68;
-        }
-        if (!conv.data.hotPref) {
-            conv.data.hotPref = 80;
-        }
-    }
-    }
-}
-
-async function geoCityToCoords(conv, city, gender, occasion) {
-    var lat;
-    var lng;
-    await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${city}}&key=AIzaSyDRzIANAmqLQ3Dyl5yJzuy49oJBzlmhBQA`)
-        .then((result) => {
-            console.log(result);
-            lat = result.data.results[0].geometry.location.lat;
-            lng = result.data.results[0].geometry.location.lng;
-            console.log(`The lattitude is ${lat}  and longitude is ${lng}`);
-        })
-        .catch((error) => {
-            console.log("Trouble getting lattitude and longitude.");
-            console.log(error);
+let x= 0;
+function httpGet(host, path) {
+    return new Promise(((resolve, reject) => {
+      var options = {
+          host: host,
+          port: 443,
+          path: path,
+          method: 'GET',
+      };
+      
+      const request = https.request(options, (response) => {
+        response.setEncoding('utf8');
+        let returnData = '';
+  
+        response.on('data', (chunk) => {
+          returnData += chunk;
         });
-    return getLocationIdForAccuweather(conv, lat, lng, city, gender, occasion);
+  
+        response.on('end', () => {
+          resolve(JSON.parse(returnData));
+        });
+  
+        response.on('error', (error) => {
+          reject(error);
+        });
+      });
+      request.end();
+    }));
+  }
+  const WearIntentHandler ={
+    canHandle(handlerInput) {
+      const request = handlerInput.requestEnvelope.request;
+      return request.type === 'IntentRequest'
+        && request.intent.name === 'GetWeatherLocation';
+    },
+    async handle(handlerInput) {
+      const response = await httpGet('http://dataservice.accuweather.com','/forecasts/v1/daily/5day/349291?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&language=en-us&details=true&metric=false');
 
-}
+      
+      console.log(response);
+      var wind = 18;
+      var precipitation = false;
+      var temp = 50;
+      var out = "";
+      if(x==0){
+     out= decideAndStateOutfit('Denver','male','formal',false,50);
+        x+=1;
+    }
+      else{
+      out=  decideAndStateOutfit('Omaha','male','lazy',false,50);
+        x-=1;
+    }
+      return handlerInput.responseBuilder
+              .speak(out)
+              .reprompt("Any other questions?")
+              .getResponse();
+    },
+  };
 
-function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
+
+function decideAndStateOutfit(city, gender, occasion, wind, temp) {
     const intro = ['I recommend you wear a ', 'As your friend, I recommend you wear a ', 'As your stylist, I recommend you wear a ', 'Based off of AccuWeather and Google Data, I recommend you wear a ', 'Based off of data sourced from AccuWeather, I recommend you wear a ', 'According to my calculations, I recommend you wear a ', 'You should wear a ', 'As your friend, I think you should wear a ', 'As your stylist, I think you should wear a ', 'Based off of AccuWeather and Google data, I think you should wear a ', 'Based off of data sourced from Accuweather, I think you should wear a ', 'According to my calculations, I think you should wear a ', 'As your friend, I think you would look great in a ', 'As your stylist, I think you would look great in a ', 'Based off of AccuWeather and Google data, I think you would look great in a ', 'Based off of data sourced from AccuWeather, I think you would look great in a ', 'According to my calculations, I think you would look great in a ', 'As your friend, I think It would great idea to wear a ', 'As your stylist, I think It would great idea to wear a ', 'Based off of AccuWeather and Google data, I think It would great idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would great idea to wear a ', 'According to my calculations, I think It would great idea to wear a ', 'As your friend, I think It would fantastic idea to wear a ', 'As your stylist, I think It would fantastic idea to wear a ', 'Based off of AccuWeather and Google data, I think It would fantastic idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would fantastic idea to wear a ', 'According to my calculations, I think It would fantastic idea to wear a ', 'As your friend, I think It would lovely idea to wear a ', 'As your stylist, I think It would lovely idea to wear a ', 'Based off of AccuWeather and Google data, I think It would lovely idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would lovely idea to wear a ', 'According to my calculations, I think It would lovely idea to wear a ', 'As your friend, I personally recommend you wear a ', 'As your stylist, I personally recommend you wear a ', 'Based off of AccuWeather and Google data, I personally recommend you wear a ', 'Based off of data sourced from AccuWeather, I personally recommend you wear a ', 'According to my calculations, I personally recommend you wear a ', 'As your friend, I think you should wear a ', 'As your stylist, I think you should wear a ', 'Based off of AccuWeather and Google data, I think you should wear a ', 'Based off of data sourced from AccuWeather, I think you should wear a ', 'According to my calculations, I think you should wear a '];
 
     var coldFormal = ['suit', 'black suit', 'gray suit', 'tan suit', 'dress with tights', 'tuxedo', 'floor length dress'];
@@ -279,106 +164,104 @@ function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
 
     }
 
-    // TODO: consider checking day's high and low
-    // TODO: temp should put emphasis on feels like
 
     var chosenIntro;
     var clothing;
-    if (temp <= conv.user.storage.coldPref) { // Cold 
+    if (temp <= 40) { // Cold 
         switch (occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = coldFormal[Math.floor(Math.random() * coldFormal.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             case 'Business Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = coldBusinessCasual[Math.floor(Math.random() * coldBusinessCasual.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             case 'Workout':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = coldWorkout[Math.floor(Math.random() * coldWorkout.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             case 'Lazy':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = coldLazy[Math.floor(Math.random() * coldLazy.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             case 'Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             default:
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
         }
-    } else if (temp <= conv.user.storage.modPref) { // Moderate
+    } else if (temp <= 68) { // Moderate
         switch (occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = moderateFormal[Math.floor(Math.random() * moderateFormal.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             case 'Business Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = moderateBusinessCasual[Math.floor(Math.random() * moderateBusinessCasual.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             case 'Workout':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = moderateWorkout[Math.floor(Math.random() * moderateWorkout.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             case 'Lazy':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = moderateLazy[Math.floor(Math.random() * moderateLazy.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             case 'Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             default:
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
         }
     } else { // Hot 
         switch (occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = hotFormal[Math.floor(Math.random() * hotFormal.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             case 'Business Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = hotBusinessCasual[Math.floor(Math.random() * hotBusinessCasual.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             case 'Workout':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = hotWorkout[Math.floor(Math.random() * hotWorkout.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             case 'Lazy':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = hotLazy[Math.floor(Math.random() * hotLazy.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             case 'Casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
                 break;
             default:
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)];
-                conv.ask(`${chosenIntro} ${clothing}.`);
+                return `${chosenIntro} ${clothing}.`;
         }
     }
 }
@@ -401,91 +284,20 @@ function cleanList(listOne, listTwo) {
     return listOne;
 }
 
-async function accuweather(conv, location, city, gender, occasion) {
-    console.log(location);
-    var wind = 18;
-    var precipitation = false;
-    var temp = 50;
-    await axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&language=en-us&details=true&metric=false`)
-        .then((result) => {
-            console.log(result.data);
-            // Pass this to what to what to wear along with other data from entities city, gender, and occasion.
-            console.log(result.data.DailyForecasts[0].AirAndPollen);
-            console.log(result.data.DailyForecasts[0]);
-            console.log(result.data.DailyForecasts[0].RealFeelTemperature);
-
-            console.log(result.data.DailyForecasts[0].RealFeelTemperature.Minimum);
-            try {
-                temp = (result.data.DailyForecasts[0].RealFeelTemperature.Minimum.Value + result.data.DailyForecasts[0].RealFeelTemperature.Maximum.Value) / 2;
-            } catch (err) {
-                console.log(`Issue getting average of high and low feels like! Error: ${err}`);
-                temp = 50;
-            }
-        })
-        .catch((error) => {
-            console.log("Problems connecting with AccuWeather");
-            console.log(error);
-        });
-    console.log(temp);
-    if (!temp) {
-        console.log("Temperature was not correctly calculated.");
-        temp = 50;
-    }
-    return decideAndStateOutfit(conv, city, gender, occasion, temp, wind);
-}
-
-async function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
-    var url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`;
-    console.log(url);
-    var locationKey = "349291"; // Defaults to Omaha
-    await axios.get(url)
-        .then((result) => {
-            console.log(result.headers['x-location-key']);
-            locationKey = result.headers['x-location-key'];
-        })
-        .catch((error) => {
-            console.log(`No location due to API failure: ${error}`);
-        });
-    console.log(locationKey.toString());
-    return accuweather(conv, locationKey.toString(), city, gender, occasion);
-}
-app.intent('Subscribe to Daily Updates', (conv) => {
-    console.log("HERE");
-    conv.ask("Cool I will start giving you daily updates!"); // TODO: Make this a list
-    /* conv.ask(new RegisterUpdate({
-         intent: 'Wear',
-         frequency: 'DAILY',
-     }));*/ //TODO finalize this implementation
-});
-app.intent('Permission', (conv) => {
-    let context;
-    // Location permissions only work for verified users
-    // https://developers.google.com/actions/assistant/guest-users
-    let permissions;
-    if (conv.user.verification === 'VERIFIED') {
-        permissions = ['DEVICE_PRECISE_LOCATION'];
-        context = 'Will you let me see your location? ';
-    }
-    const options = {
-        context,
-        permissions,
-    };
-    conv.ask(new Permission(options));
-    /*conv.ask(new Suggestions([
-        'Yes',
-        'No'
-    ]));*/
-});
-app.intent('Permission Handler', (conv, params, confirmationGranted) => {
-    const { location } = conv.device;
-    if (confirmationGranted && location) {
-        console.log("Got permissions to get location.");
-        conv.add("Thanks, reccomendation coming right up!");
-        const { latitude, longitude } = location.coordinates;
-        return getLocationIdForAccuweather(conv, latitude, longitude, "", "", "");
-    } else {
-        conv.ask(`Looks like I can't get your information.`);
-    }
-});
-
-exports.dialogflowFirebaseFulfillment = functions.https.onRequest(app);
+// The SkillBuilder acts as the entry point for your skill, routing all request and response
+// payloads to the handlers above. Make sure any new handlers or interceptors you've
+// defined are included below. The order matters - they're processed top to bottom.
+exports.handler = Alexa.SkillBuilders.custom()
+    .addRequestHandlers(
+        LaunchRequestHandler,
+        HelloWorldIntentHandler,
+        HelpIntentHandler,
+        CancelAndStopIntentHandler,
+        SessionEndedRequestHandler,
+        WearIntentHandler,
+        IntentReflectorHandler, // make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
+    )
+    .addErrorHandlers(
+        ErrorHandler,
+    )
+    .lambda();
