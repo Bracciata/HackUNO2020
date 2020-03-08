@@ -368,16 +368,32 @@ function cleanList(listOne, listTwo) {
 
 async function accuweather(conv, location, city, gender, occasion) {
     console.log(location);
+  var wind = 18;
+  var precipitation = false;
+  var temp = 50;
     await axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&language=en-us&details=true&metric=false`)
         .then((result) => {
             console.log(result.data);
             // Pass this to what to what to wear along with other data from entities city, gender, and occasion.
             conv.ask("HEY");
-            console.log(result.DailyForecasts[0].RealFeelTemperature);
+            console.log(result.data.DailyForecasts[0].AirAndPollen);
+      console.log(result.data.DailyForecasts[0]);
+            console.log(result.data.DailyForecasts[0].RealFeelTemperature);
+
+      console.log(result.data.DailyForecasts[0].RealFeelTemperature.Minimum);
+      try{temp = (result.data.DailyForecasts[0].RealFeelTemperature.Minimum.value + result.data.DailyForecasts[0].RealFeelTemperature.Maximum.value)/2;
+         }catch(err){
+           console.log(`Issue getting average of high and low feels like! Error: ${err}`);
+         temp=50;}
         })
         .catch((result) => {
             console.log("We screwed up");
         });
+  console.log(temp);
+  if(!temp){
+    console.log("Temperature was not correctly calculated.");
+    temp = 50
+  }
     return decideAndStateOutfit(conv, city, gender, occasion, temp, wind);
 }
 
