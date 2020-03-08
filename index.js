@@ -85,7 +85,7 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
         const { location } = conv.device;
         if (location) {
             const { latitude, longitude } = location.coordinates;
-            await getLocationIdForAccuweather(conv, latitude, longitude, city, gender, occasion);
+            getLocationIdForAccuweather(conv, latitude, longitude, city, gender, occasion);
         }
         else {
             // CALL THE INTENT? permissionChecker(conv, city, gender, occasion);
@@ -126,18 +126,24 @@ function initialStartup(conv) {
     }
 }
 
-function geoCityToCoords(conv, city, gender, occasion) {
-    return axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${city}}&key=AIzaSyDRzIANAmqLQ3Dyl5yJzuy49oJBzlmhBQA`)
+async function geoCityToCoords(conv, city, gender, occasion) {
+  var lat;
+  var lng;
+  await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${city}}&key=AIzaSyDRzIANAmqLQ3Dyl5yJzuy49oJBzlmhBQA`)
         .then((result) => {
             console.log(result);
-            const lat = result.data.results[0].geometry.location.lat;
-            const lng = result.data.results[0].geometry.location.lng;
+             lat = result.data.results[0].geometry.location.lat;
+             lng = result.data.results[0].geometry.location.lng;
             console.log(`The lattitude is ${lat}  and longitude is ${lng}`);
-            await getLocationIdForAccuweather(conv, lat, lng, city,gender, occasion);
         });
+  console.log(`TOMMY LAT HERE ${lng}`);
+       return	getLocationIdForAccuweather(conv, lat, lng, city,gender, occasion);
+
 }
 
 function decideAndStateOutfit(conv) {
+  console.log("PICKING OUT AN OUTFIT");
+  return;
     // TODO: Figure this code out...
     app.intent('Wear', (conv) => {
         if (conv.user.verification === 'VERIFIED') {
@@ -360,30 +366,35 @@ function cleanList(listOne, listTwo) {
     return listOne;
 }
 
-async function accuweather(conv, location, city, gender, occasion) {
+ async function accuweather(conv, location, city, gender, occasion) {
     console.log(location);
-    return axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&language=en-us&details=true&metric=false`)
+    await axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&language=en-us&details=true&metric=false`)
         .then((result) => {
             console.log(result.data);
             // Pass this to what to what to wear along with other data from entities city, gender, and occasion.
-            conv.end("HEY");
+            conv.ask("HEY");
         })
         .catch((result) => {
             console.log("We screwed up");
         });
+   return decideAndStateOutfit(conv);
 }
 
-async function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
+ async function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
     console.log(`THE LAT IS ${lat}`)
-    return axios.get(`http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`)
+    var url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`;
+    console.log(url);
+   var locationKey;
+    await axios.get(url)
         .then((result) => {
             console.log(result.headers['x-location-key']);
-            await accuweather(conv, result.headers['x-location-key'].toString(), city, gender, occasion);
+      locationKey=result.headers['x-location-key'];
         })
         .catch((error) => {
             console.log("We screwed up, no location :(");
             console.log(error);
         });
+      return accuweather(conv, locationKey.toString(), city, gender, occasion);
 }
 app.intent('Subscribe to Daily Updates', (conv) => {
     console.log("HERE");
