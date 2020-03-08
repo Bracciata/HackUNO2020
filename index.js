@@ -128,8 +128,8 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
             getLocationIdForAccuweather(conv, latitude, longitude, city, gender, occasion);
         }
         else {
+            console.log("WTFFFFFF");
             conv.ask("Do I have your premission to get your location?");
-            // ADD SUGGESTION HERE
             conv.ask(new Suggestions([
                 'Yes, you do',
                 'No, you don\'t'
@@ -420,7 +420,7 @@ async function accuweather(conv, location, city, gender, occasion) {
     var wind = 18;
     var precipitation = false;
     var temp = 50;
-    await axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&language=en-us&details=true&metric=false`)
+    await axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=A5mpbG5KTGlMLQavjm2O9yUGSvQ1vlVL&language=en-us&details=true&metric=false`)
         .then((result) => {
             console.log(result.data);
             // Pass this to what to what to wear along with other data from entities city, gender, and occasion.
@@ -449,7 +449,7 @@ async function accuweather(conv, location, city, gender, occasion) {
 }
 
 async function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
-    var url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`;
+    var url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=A5mpbG5KTGlMLQavjm2O9yUGSvQ1vlVL&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`;
     console.log(url);
     var locationKey = "349291"; // Defaults to Omaha
     await axios.get(url)
@@ -490,6 +490,18 @@ app.intent('Permission', (conv) => {
         'No'
     ]));*/
 });
+app.intent('Initial Permission Handler', (conv, params, confirmationGranted) => {
+    const { location } = conv.device;
+    if (confirmationGranted && location) {
+        console.log("Got permissions to get location.");
+        conv.add("Thanks, reccomendation coming right up!");
+        const { latitude, longitude } = location.coordinates;
+        return getLocationIdForAccuweather(conv, latitude, longitude, "", "", "");
+    } else {
+        conv.ask(`Looks like I can't get your information.`);
+    }
+});
+
 app.intent('Permission Handler', (conv, params, confirmationGranted) => {
     const { location } = conv.device;
     if (confirmationGranted && location) {
