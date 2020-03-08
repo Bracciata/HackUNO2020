@@ -8,7 +8,7 @@ const app = dialogflow({ debug: true });
 
 app.intent('Default Welcome Intent', (conv) => {
     var greetings = ['Hey I am UNO, how can I help you today?', 'Welcome! My name is Uno, how can I help you today?', 'Welcome! It\'s Uno, how can I help you today?', 'Greetings! My name is Uno, how can I help you today?', 'Greetings! It\'s Uno, how can I help you today?', 'Salutations! My name is Uno, how can I help you today?', 'Salutations! It\'s Uno, how can I help you today?', 'Howdy! My name is Uno, how can I help you today?', 'Howdy! It\'s Uno, how can I help you today?', 'Hello! My name is Uno, how can I help you today?', 'Hello! It\'s Uno, how can I help you today?', 'Hi! My name is Uno, how can I help you today?', 'Hi! It\'s Uno, how can I help you today?']; 
-    var chosenGreeting = greetings[Math.floot(Math.random() * greetings.length)];
+    var chosenGreeting = greetings[Math.floor(Math.random() * greetings.length)];
     conv.ask(`${chosenGreeting}.`);
 });
 app.intent('Default Fallback Intent', (conv) => {
@@ -17,33 +17,34 @@ app.intent('Default Fallback Intent', (conv) => {
     if (conv.data.fallbackCount === 1) {
         conv.contexts.set(DONE_YES_NO_CONTEXT, 5);
         var closerQuestions = ['Did you decide what you will wear already?', 'Did you pick out an outfit?', 'Did you get an outfit selected?', 'Did you get an outflit picked out?']; // Add
-        var chosenCloserQuestion = closerQuestions[Math.floot(Math.random() * closerQuestions.length)];
+        var chosenCloserQuestion = closerQuestions[Math.floor(Math.random() * closerQuestions.length)];
 
         conv.ask(`${chosenCloserQuestion}`);
     } else {
         conv.contexts.set(DONE_YES_NO_CONTEXT, 5);
         var closers = ['I am struggling to understand right now, lets talk again soon!', 'I don\'t understand what you want right now, lets talk again soon!', 'I am struggling to understand right now, ask me again!', 'I don\'t understand what you want right now, ask me again!']; 
-        var chosenCloser = closers[Math.floot(Math.random() * closers.length)];
+        var chosenCloser = closers[Math.floor(Math.random() * closers.length)];
         conv.close(`${chosenCloser}`);
     }
-app.intent('Get Gender', (conv, { gender }) => {
+});
+app.intent('Set Gender', (conv, { "gender" : gender }) => {
+    conv.ask(`What do you identify as?`);
     conv.data.gender = gender;
-    conv.ask(`Got it!`);
-    conv.ask(`What do you consider as cold?`);
     agent.add(conv);
 });
-app.intent('Set Temperature Preference.', (conv, {temperature, condition}) => {
-    if (condition === cold && temperature < conv.user.storage.modPref) {
-        conv.data[condition] = temperature;
-    } else if (condition === moderate && temperature < conv.user.storage.hotPref && temperature > conv.user.storage.coldPref){
-        conv.data[condition] = temperature;
-    } else if (condition === hot && temperature > conv.user.storage.modPref) {
-        conv.data[condition] = temperature;
+app.intent('Set Temperature Preferences', (conv, {"temperature" : temperature, "condition" : condition}) => {
+    if (condition === 'cold' && temperature < conv.user.storage.modPref) {
+        conv.data.coldPref = temperature;
+    } else if (condition === 'moderate' && temperature < conv.user.storage.hotPref && temperature > conv.user.storage.coldPref){
+        conv.data.modPref = temperature;
+    } else if (condition === 'hot' && temperature > conv.user.storage.modPref) {
+        conv.data.hotPref = temperature;
     }
+    conv.ask(`Do you want me to save your preferences?`);
 });
 app.intent('Check Preferences', (conv) => {
     if (conv.user.verification === 'VERIFIED') {
-        if (conv.user.storage.gender && conv.user.storage.coldPref && conv.user.storage.modPref && conv.user.storage.hotPref) {
+        if (conv.user.storage.gender || conv.user.storage.coldPref || conv.user.storage.modPref || conv.user.storage.hotPref) {
             if (conv.user.storage.gender) {
                 conv.ask(`Your current gender preference is ${conv.user.storage.gender}`);
             }
@@ -56,28 +57,23 @@ app.intent('Check Preferences', (conv) => {
             if (conv.user.storage.hotPref) {
                 conv.ask(`Your current hot preference is ${conv.user.storage.hotPref}`);
             }
-            console.log("ye Preferencessssss");
-            conv.ask(`Would you like to save a new preference?`)
         } else {
-            conv.ask(`Would you like to set your preference?`)
+            conv.close(`Would you like to set your preference?`)
         }
     } else {
         conv.close(`We do not have permission to set your preferences. Please sign in to become verified.`);       
     }
 });
-
 app.intent('Save Preferences', (conv) => {
     if (conv.user.verification === 'VERIFIED') {
         conv.user.storage.gender = conv.data.gender;
         conv.user.storage.coldPref = conv.data.coldPref;
         conv.user.storage.modPref = conv.data.modPref;
         conv.user.storage.hotPref = conv.data.hotPref;
-        agent.add(conv);
         conv.close(`Alright, I'll store that for next time. See you then.`);
     } else {
         conv.close(`I can't save that now, but we can remember them next time!`);
     }
-    agent.add(conv);
 });
 app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occasion }) => {
     console.log(`City is ${city}`);
@@ -222,82 +218,81 @@ function decideAndStateOutfit(agent) {
     if (temp <= 40) { // Cold 
         switch (agent.parameters.occasion) {
             case 'Formal':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = coldFormal[Math.floor(Math.random() * coldFormal.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             case 'Business Casual':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = coldBusinessCasual[Math.floor(Math.random() * coldBusinessCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             case 'Workout':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = coldWorkout[Math.floor(Math.random() * coldWorkout.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             case 'Lazy':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = coldLazy[Math.floor(Math.random() * coldLazy.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             case 'Casual':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             default:
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
     } else if (temp <= 68) { // Moderate
         switch (agent.parameters.occasion) {
             case 'Formal':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = moderateFormal[Math.floor(Math.random() * moderateFormal.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             case 'Business Casual':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = moderateBusinessCasual[Math.floor(Math.random() * moderateBusinessCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             case 'Workout':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = moderateWorkout[Math.floor(Math.random() * moderateWorkout.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             case 'Lazy':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = moderateLazy[Math.floor(Math.random() * moderateLazy.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             case 'Casual':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             default:
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
     } else { // Hot 
-
         switch (agent.parameters.occasion) {
             case 'Formal':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = hotFormal[Math.floor(Math.random() * hotFormal.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             case 'Business Casual':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = hotBusinessCasual[Math.floor(Math.random() * hotBusinessCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             case 'Workout':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = hotWorkout[Math.floor(Math.random() * hotWorkout.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             case 'Lazy':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = hotLazy[Math.floor(Math.random() * hotLazy.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             case 'Casual':
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
             default:
-                var chosenIntro = intro[Math.floot(Math.random() * intro.length)];
+                var chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 var clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
@@ -315,6 +310,7 @@ function cleanList(listOne, listTwo) {
     }
     return listOne;
 }
+
 function accuweather(conv, location, city, gender, occasion) {
     console.log(location);
     return axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&language=en-us&details=true&metric=false`)
