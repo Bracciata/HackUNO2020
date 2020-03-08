@@ -78,17 +78,17 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
     initialStartup(conv);
     console.log(`City is ${city}`);
     if (city != "") {
-        geoCityToCoords(conv, city, gender, occasion);
+        return geoCityToCoords(conv, city, gender, occasion);
     } else {
         // TODO: ask for location permissions through google home
         //TODO CHECK IF YOU HAVE PERMISSIONS AND ONLY CALL IF YOU DO NOT
         const { location } = conv.device;
         if (location) {
             const { latitude, longitude } = location.coordinates;
-            getLocationIdForAccuweather(conv, latitude, longitude, city, gender, occasion);
+            return getLocationIdForAccuweather(conv, latitude, longitude, city, gender, occasion);
         }
         else {
-            permissionChecker(conv, city, gender, occasion);
+            // CALL THE INTENT? permissionChecker(conv, city, gender, occasion);
         }
     }
 });
@@ -133,7 +133,7 @@ function geoCityToCoords(conv, city, gender, occasion) {
             const lat = result.data.results[0].geometry.location.lat;
             const lng = result.data.results[0].geometry.location.lng;
             console.log(`The lattitude is ${lat}  and longitude is ${lng}`);
-            getLocationIdForAccuweather(conv, lat, lng, city,gender, occasion);
+            return getLocationIdForAccuweather(conv, lat, lng, city,gender, occasion);
         });
 }
 
@@ -367,6 +367,7 @@ function accuweather(conv, location, city, gender, occasion) {
         .then((result) => {
             console.log(result.data);
             // Pass this to what to what to wear along with other data from entities city, gender, and occasion.
+            conv.end("HEY");
         })
         .catch((result) => {
             console.log("We screwed up");
@@ -378,7 +379,7 @@ function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
     return axios.get(`http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=Ol2aGPmTdX43J1JOsQmMLEeu6eouZ6bX&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`)
         .then((result) => {
             console.log(result.headers['x-location-key']);
-            accuweather(conv, result.headers['x-location-key'].toString(), city, gender, occasion);
+            return accuweather(conv, result.headers['x-location-key'].toString(), city, gender, occasion);
         })
         .catch((error) => {
             console.log("We screwed up, no location :(");
