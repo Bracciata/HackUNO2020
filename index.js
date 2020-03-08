@@ -28,12 +28,9 @@ app.intent('Default Fallback Intent', (conv) => {
 app.intent('Set Gender', (conv, { "gender" : gender }) => {
     conv.ask(`What do you identify as?`);
     conv.data.gender = gender;
-    agent.add(conv);
 });
-app.intent('Set Temperature Preferences', (conv, {"temperature" : temperature, "condition" : condition}) => {
-    console.log(temperature);
-    console.log(condition);
-    console.log("SEEEEEEET");
+app.intent('Set Temperature Preferences', (conv, {"temperature" : temperature, "conditions" : condition}) => {
+    initialStartup(conv);
     if (condition === 'cold' && temperature < conv.user.storage.modPref) {
         conv.data.coldPref = temperature;
     } else if (condition === 'moderate' && temperature < conv.user.storage.hotPref && temperature > conv.user.storage.coldPref){
@@ -44,6 +41,7 @@ app.intent('Set Temperature Preferences', (conv, {"temperature" : temperature, "
     conv.ask(`Do you want me to save your preferences?`);
 });
 app.intent('Check Preferences', (conv) => {
+    initialStartup(conv);
     if (conv.user.verification === 'VERIFIED') {
         if (conv.user.storage.gender || conv.user.storage.coldPref || conv.user.storage.modPref || conv.user.storage.hotPref) {
             if (conv.user.storage.gender) {
@@ -68,21 +66,16 @@ app.intent('Check Preferences', (conv) => {
 app.intent('Save Preferences', (conv) => {
     if (conv.user.verification === 'VERIFIED') {
         conv.user.storage.gender = conv.data.gender;
-        conv.user.storage.coldPref = 42;
-        conv.user.storage.modPref = '60';
-        conv.user.storage.hotPref = 73;
-        console.log("COLD");
-        console.log(conv.user.storage.coldPref);
-        console.log("Moderate");
-        console.log(conv.user.storage.modPref);
-        console.log("HOT");
-        console.log(conv.user.storage.hotPref);
+        conv.user.storage.coldPref = conv.data.coldPref;
+        conv.user.storage.modPref = conv.data.modPref;
+        conv.user.storage.hotPref = conv.data.hotPref;
         conv.close(`Alright, I'll store that for next time. See you then.`);
     } else {
         conv.close(`I can't save that now, but we can remember them next time!`);
     }
 });
-app.intent('Wear', async conv { "geo-city": city, "gender": gender, "occasion": occasion })  => {
+app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occasion }) => {
+    initialStartup(conv);
     console.log(`City is ${city}`);
     if (city != "") {
         return geoCityToCoords(conv, city, gender, occasion);
@@ -100,7 +93,40 @@ app.intent('Wear', async conv { "geo-city": city, "gender": gender, "occasion": 
     }
 });
 
-async function geoCityToCoords(conv, city, gender, occasion) {
+function initialStartup(conv) {
+    if (conv.user.verification === 'VERIFIED') {
+        if (conv.user.storage.gender || conv.user.storage.coldPref || conv.user.storage.modPref || conv.user.storage.hotPref) {
+            if (!conv.data.gender) {
+                conv.data.gender = '';
+            }
+            if (!conv.data.coldPref) {
+                conv.data.coldPref = 40;
+            }
+            if (!conv.data.modPref) {
+                conv.data.modPref = 55;
+            }
+            if (!conv.data.hotPref) {
+                conv.data.hotPref = 68;
+            }
+        }
+    } else {
+        if (!conv.user.storage.gender) {
+            conv.user.storage.gender = '';
+        }
+        if (!conv.user.storage.coldPref) {
+            conv.user.storage.coldPref = 40;
+        }
+        if (!conv.user.storage.modPref) {
+            conv.user.storage.modPref = 55;
+        }
+        if (!conv.user.storage.hotPref) {
+            conv.user.storage.hotPref = 68;
+        } 
+        conv.close
+    }
+}
+
+function geoCityToCoords(conv, city, gender, occasion) {
     return axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${city}}&key=AIzaSyDRzIANAmqLQ3Dyl5yJzuy49oJBzlmhBQA`)
         .then((result) => {
             console.log(result);
@@ -150,7 +176,7 @@ function decideAndStateOutfit(conv) {
     const removedArticlesFemale = ['tuxedo'];
     const removedArticlesBoth = ['skirt', 'leggings', 'dress', 'blouse', 'tuxedo'];
 
-    if (agent.parameters.gender == 'male') {
+    if (agent.parameters.gender == 'male' || conv.storage.gender == 'male') {
         coldFormal = cleanList(coldFormal, removedArticlesMale);
         moderateFormal = cleanList(moderateFormal, removedArticlesMale);
         hotFormal = cleanList(hotFormal, removedArticlesMale);
@@ -166,7 +192,7 @@ function decideAndStateOutfit(conv) {
         coldCasual = cleanList(coldCasual, removedArticlesMale);
         moderateCasual = cleanList(moderateCasual, removedArticlesMale);
         hotCasual = cleanList(hotCasual, removedArticlesMale);
-    } else if (agent.parameters.gender == 'female') {
+    } else if (agent.parameters.gender == 'female'|| conv.storage.gender == 'female') {
         coldFormal = cleanList(coldFormal, removedArticlesFemale);
         moderateFormal = cleanList(moderateFormal, removedArticlesFemale);
         hotFormal = cleanList(hotFormal, removedArticlesFemale);
@@ -224,7 +250,7 @@ function decideAndStateOutfit(conv) {
 
     var chosenIntro; 
     var clothing; 
-    if (temp <= 40) { // Cold 
+    if (temp <= conv.storage.coldPref) { // Cold 
         switch (agent.parameters.occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
@@ -256,7 +282,7 @@ function decideAndStateOutfit(conv) {
                 clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)]
                 conv.ask(`${chosenIntro} ${clothing}.`);
         }
-    } else if (temp <= 68) { // Moderate
+    } else if (temp <= conv.storage.modPref) { // Moderate
         switch (agent.parameters.occasion) {
             case 'Formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
