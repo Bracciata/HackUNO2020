@@ -34,6 +34,8 @@ app.intent('Default Fallback Intent', (conv) => {
         conv.close(`${chosenCloser}`);
     }
 });
+
+// Setting gender preference
 app.intent('Set Gender', (conv, { "gender": gender }) => {
     conv.ask(`What do you identify as?`);
     conv.data.gender = gender;
@@ -42,6 +44,7 @@ app.intent('Set Gender', (conv, { "gender": gender }) => {
         'Female'
     ]));
 });
+// Setting temperature preferences
 app.intent('Set Temperature Preferences', (conv, { "temperature": temperature, "conditions": condition }) => {
     initialStartup(conv);
     if (condition === 'cold' && temperature < conv.user.storage.modPref) {
@@ -57,6 +60,7 @@ app.intent('Set Temperature Preferences', (conv, { "temperature": temperature, "
         'No'
     ]));
 });
+// Checking all avaliable preferences
 app.intent('Check Preferences', (conv) => {
     initialStartup(conv);
     if (conv.user.verification === 'VERIFIED') {
@@ -133,25 +137,25 @@ function initialStartup(conv) {
                 conv.user.storage.coldPref = 40;
             }
             if (!conv.user.storage.modPref) {
-                conv.user.storage.modPref = 55;
+                conv.user.storage.modPref = 68;
             }
             if (!conv.user.storage.hotPref) {
-                conv.user.storage.hotPref = 68;
+                conv.user.storage.hotPref = 80;
             }
-        } else {
-            if (!conv.data.gender) {
-                conv.data.gender = '';
-            }
-            if (!conv.data.coldPref) {
-                conv.data.coldPref = 40;
-            }
-            if (!conv.data.modPref) {
-                conv.data.modPref = 55;
-            }
-            if (!conv.data.hotPref) {
-                conv.data.hotPref = 68;
-            }
+    } else {
+        if (!conv.data.gender) {
+            conv.data.gender = '';
         }
+        if (!conv.data.coldPref) {
+            conv.data.coldPref = 40;
+        }
+        if (!conv.data.modPref) {
+            conv.data.modPref = 68;
+        }
+        if (!conv.data.hotPref) {
+            conv.data.hotPref = 80;
+        }
+    }
     }
 }
 
@@ -164,6 +168,10 @@ async function geoCityToCoords(conv, city, gender, occasion) {
             lat = result.data.results[0].geometry.location.lat;
             lng = result.data.results[0].geometry.location.lng;
             console.log(`The lattitude is ${lat}  and longitude is ${lng}`);
+        })
+        .catch((error) => {
+            console.log("Trouble getting lattitude and longitude.");
+            console.log(error);
         });
     return getLocationIdForAccuweather(conv, lat, lng, city, gender, occasion);
 
@@ -198,9 +206,7 @@ function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
     const removedArticlesBoth = ['skirt', 'leggings', 'dress', 'blouse', 'tuxedo'];
 
     if (!gender) {
-        if (conv.user.storage.gender) {
-            gender = conv.user.storage.gender;
-        }
+        gender = conv.user.storage.gender;
     }
     if (gender) {
         if (gender == 'male' || conv.storage.gender == 'male') {
@@ -275,14 +281,6 @@ function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
 
     // TODO: consider checking day's high and low
     // TODO: temp should put emphasis on feels like
-
-    if (!conv.user.storage.modPref) {
-        conv.user.storage.modPref = 68;
-    } if (!conv.user.storage.coldPref) {
-        conv.user.storage.modPref = 40;
-    } if (!conv.user.storage.hotPref) {
-        conv.user.storage.modPref = 80;
-    }
 
     var chosenIntro;
     var clothing;
@@ -424,8 +422,9 @@ async function accuweather(conv, location, city, gender, occasion) {
                 temp = 50;
             }
         })
-        .catch((result) => {
-            console.log("We screwed up");
+        .catch((error) => {
+            console.log("Problems connecting with AccuWeather");
+            console.log(error);
         });
     console.log(temp);
     if (!temp) {
@@ -446,7 +445,6 @@ async function getLocationIdForAccuweather(conv, lat, long, city, gender, occasi
         })
         .catch((error) => {
             console.log(`No location due to API failure: ${error}`);
-            console.log(error);
         });
     console.log(locationKey.toString());
     return accuweather(conv, locationKey.toString(), city, gender, occasion);
