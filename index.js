@@ -302,13 +302,4 @@ function checkPreferences(agent) {
         const permission = agent.SupportedPermissions.DEVICE_PRECISE_LOCATION;
         agent.askForPermission('To get your location', permission);
     }
-
-    // Run the proper function handler based on the matched Dialogflow intent name
-    let intentMap = new Map();
-    intentMap.set('Default Welcome Intent', welcome);
-    intentMap.set('Default Fallback Intent', fallback);
-    intentMap.set('Wear', wear);
-    intentMap.set('Daily Updates', setupDailyUpdates);
-
-    agent.handleRequest(intentMap);
 });
