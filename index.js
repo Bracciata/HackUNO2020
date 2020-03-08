@@ -8,11 +8,11 @@ app.intent('Default Welcome Intent', (conv) => {
     var greetings = ['Hey I am UNO, how can I help you today?', 'Welcome! My name is Uno, how can I help you today?', 'Welcome! It\'s Uno, how can I help you today?', 'Greetings! My name is Uno, how can I help you today?', 'Greetings! It\'s Uno, how can I help you today?', 'Salutations! My name is Uno, how can I help you today?', 'Salutations! It\'s Uno, how can I help you today?', 'Howdy! My name is Uno, how can I help you today?', 'Howdy! It\'s Uno, how can I help you today?', 'Hello! My name is Uno, how can I help you today?', 'Hello! It\'s Uno, how can I help you today?', 'Hi! My name is Uno, how can I help you today?', 'Hi! It\'s Uno, how can I help you today?'];
     var chosenGreeting = greetings[Math.floor(Math.random() * greetings.length)];
     conv.ask(`${chosenGreeting}`);
-  conv.ask(new Suggestions([
-    'What do I wear now?',
-    'What do I wear today?',
-	'What do I wear?'
-  ]));
+    conv.ask(new Suggestions([
+        'What do I wear now?',
+        'What do I wear today?',
+        'What do I wear?'
+    ]));
 });
 app.intent('Default Fallback Intent', (conv) => {
     conv.data.fallbackCount++;
@@ -66,8 +66,8 @@ app.intent('Check Preferences', (conv) => {
         conv.close(`We do not have permission to set your preferences. Please sign in to become verified.`);
     }
     conv.ask(new Suggestions([
-      'Yes',
-      'No'
+        'Yes',
+        'No'
     ]));
 });
 app.intent('Save Preferences', (conv) => {
@@ -85,10 +85,11 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
     initialStartup(conv);
     console.log(`City is ${city}`);
     if (city != "") {
+        // Location was passed.
         return geoCityToCoords(conv, city, gender, occasion);
     } else {
-        // TODO: ask for location permissions through google home
-        //TODO CHECK IF YOU HAVE PERMISSIONS AND ONLY CALL IF YOU DO NOT
+        // Checks if we can get the devices location and if not tell the user to grant permission.
+        // However, fist check they do not have a home location. TODO: Implement home location.
         const { location } = conv.device;
         if (location) {
             const { latitude, longitude } = location.coordinates;
@@ -100,7 +101,7 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
             conv.ask(new Suggestions([
                 'Yes',
                 'No'
-              ]));
+            ]));
         }
     }
 });
@@ -120,20 +121,20 @@ function initialStartup(conv) {
             if (!conv.user.storage.hotPref) {
                 conv.user.storage.hotPref = 68;
             }
-    } else {
-        if (!conv.data.gender) {
-            conv.data.gender = '';
+        } else {
+            if (!conv.data.gender) {
+                conv.data.gender = '';
+            }
+            if (!conv.data.coldPref) {
+                conv.data.coldPref = 40;
+            }
+            if (!conv.data.modPref) {
+                conv.data.modPref = 55;
+            }
+            if (!conv.data.hotPref) {
+                conv.data.hotPref = 68;
+            }
         }
-        if (!conv.data.coldPref) {
-            conv.data.coldPref = 40;
-        }
-        if (!conv.data.modPref) {
-            conv.data.modPref = 55;
-        }
-        if (!conv.data.hotPref) {
-            conv.data.hotPref = 68;
-        }
-    }
     }
 }
 
@@ -147,7 +148,6 @@ async function geoCityToCoords(conv, city, gender, occasion) {
             lng = result.data.results[0].geometry.location.lng;
             console.log(`The lattitude is ${lat}  and longitude is ${lng}`);
         });
-    console.log(`TOMMY LAT HERE ${lng}`);
     return getLocationIdForAccuweather(conv, lat, lng, city, gender, occasion);
 
 }
@@ -180,38 +180,45 @@ function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
     const removedArticlesFemale = ['tuxedo'];
     const removedArticlesBoth = ['skirt', 'leggings', 'dress', 'blouse', 'tuxedo'];
 
-    if (gender == 'male' || conv.storage.gender == 'male') {
-        coldFormal = cleanList(coldFormal, removedArticlesMale);
-        moderateFormal = cleanList(moderateFormal, removedArticlesMale);
-        hotFormal = cleanList(hotFormal, removedArticlesMale);
-        coldBusinessCasual = cleanList(coldBusinessCasual, removedArticlesMale);
-        moderateBusinessCasual = cleanList(moderateBusinessCasual, removedArticlesMale);
-        hotBusinessCasual = cleanList(hotBusinessCasual, removedArticlesMale);
-        coldLazy = cleanList(coldLazy, removedArticlesMale);
-        moderateLazy = cleanList(moderateLazy, removedArticlesMale);
-        hotLazy = cleanList(hotLazy, removedArticlesMale);
-        coldWorkout = cleanList(coldWorkout, removedArticlesMale);
-        moderateWorkout = cleanList(moderateWorkout, removedArticlesMale);
-        hotWorkout = cleanList(hotWorkout, removedArticlesMale);
-        coldCasual = cleanList(coldCasual, removedArticlesMale);
-        moderateCasual = cleanList(moderateCasual, removedArticlesMale);
-        hotCasual = cleanList(hotCasual, removedArticlesMale);
-    } else if (gender == 'female' || conv.storage.gender == 'female') {
-        coldFormal = cleanList(coldFormal, removedArticlesFemale);
-        moderateFormal = cleanList(moderateFormal, removedArticlesFemale);
-        hotFormal = cleanList(hotFormal, removedArticlesFemale);
-        coldBusinessCasual = cleanList(coldBusinessCasual, removedArticlesFemale);
-        moderateBusinessCasual = cleanList(moderateBusinessCasual, removedArticlesFemale);
-        hotBusinessCasual = cleanList(hotBusinessCasual, removedArticlesFemale);
-        coldLazy = cleanList(coldLazy, removedArticlesFemale);
-        moderateLazy = cleanList(moderateLazy, removedArticlesFemale);
-        hotLazy = cleanList(hotLazy, removedArticlesFemale);
-        coldWorkout = cleanList(coldWorkout, removedArticlesFemale);
-        moderateWorkout = cleanList(moderateWorkout, removedArticlesFemale);
-        hotWorkout = cleanList(hotWorkout, removedArticlesFemale);
-        coldCasual = cleanList(coldCasual, removedArticlesFemale);
-        moderateCasual = cleanList(moderateCasual, removedArticlesFemale);
-        hotCasual = cleanList(hotCasual, removedArticlesFemale);
+    if (!gender) {
+        if (conv.user.storage.gender) {
+            gender = conv.user.storage.gender;
+        }
+    }
+    if (gender) {
+        if (gender == 'male' || conv.storage.gender == 'male') {
+            coldFormal = cleanList(coldFormal, removedArticlesMale);
+            moderateFormal = cleanList(moderateFormal, removedArticlesMale);
+            hotFormal = cleanList(hotFormal, removedArticlesMale);
+            coldBusinessCasual = cleanList(coldBusinessCasual, removedArticlesMale);
+            moderateBusinessCasual = cleanList(moderateBusinessCasual, removedArticlesMale);
+            hotBusinessCasual = cleanList(hotBusinessCasual, removedArticlesMale);
+            coldLazy = cleanList(coldLazy, removedArticlesMale);
+            moderateLazy = cleanList(moderateLazy, removedArticlesMale);
+            hotLazy = cleanList(hotLazy, removedArticlesMale);
+            coldWorkout = cleanList(coldWorkout, removedArticlesMale);
+            moderateWorkout = cleanList(moderateWorkout, removedArticlesMale);
+            hotWorkout = cleanList(hotWorkout, removedArticlesMale);
+            coldCasual = cleanList(coldCasual, removedArticlesMale);
+            moderateCasual = cleanList(moderateCasual, removedArticlesMale);
+            hotCasual = cleanList(hotCasual, removedArticlesMale);
+        } else if (gender == 'female' || conv.storage.gender == 'female') {
+            coldFormal = cleanList(coldFormal, removedArticlesFemale);
+            moderateFormal = cleanList(moderateFormal, removedArticlesFemale);
+            hotFormal = cleanList(hotFormal, removedArticlesFemale);
+            coldBusinessCasual = cleanList(coldBusinessCasual, removedArticlesFemale);
+            moderateBusinessCasual = cleanList(moderateBusinessCasual, removedArticlesFemale);
+            hotBusinessCasual = cleanList(hotBusinessCasual, removedArticlesFemale);
+            coldLazy = cleanList(coldLazy, removedArticlesFemale);
+            moderateLazy = cleanList(moderateLazy, removedArticlesFemale);
+            hotLazy = cleanList(hotLazy, removedArticlesFemale);
+            coldWorkout = cleanList(coldWorkout, removedArticlesFemale);
+            moderateWorkout = cleanList(moderateWorkout, removedArticlesFemale);
+            hotWorkout = cleanList(hotWorkout, removedArticlesFemale);
+            coldCasual = cleanList(coldCasual, removedArticlesFemale);
+            moderateCasual = cleanList(moderateCasual, removedArticlesFemale);
+            hotCasual = cleanList(hotCasual, removedArticlesFemale);
+        }
     } else {
         coldFormal = cleanList(coldFormal, removedArticlesBoth);
         moderateFormal = cleanList(moderateFormal, removedArticlesBoth);
@@ -259,11 +266,7 @@ function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
     } if (!conv.user.storage.hotPref) {
         conv.user.storage.modPref = 80;
     }
-    if(!gender){
-        if(conv.user.storage.gender){
-            gender=conv.user.storage.gender;
-        }
-    }
+
     var chosenIntro;
     var clothing;
     if (temp <= conv.user.storage.coldPref) { // Cold 
@@ -378,32 +381,34 @@ function cleanList(listOne, listTwo) {
 
 async function accuweather(conv, location, city, gender, occasion) {
     console.log(location);
-  var wind = 18;
-  var precipitation = false;
-  var temp = 50;
+    var wind = 18;
+    var precipitation = false;
+    var temp = 50;
     await axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&language=en-us&details=true&metric=false`)
         .then((result) => {
             console.log(result.data);
             // Pass this to what to what to wear along with other data from entities city, gender, and occasion.
             conv.ask("HEY");
             console.log(result.data.DailyForecasts[0].AirAndPollen);
-      console.log(result.data.DailyForecasts[0]);
+            console.log(result.data.DailyForecasts[0]);
             console.log(result.data.DailyForecasts[0].RealFeelTemperature);
 
-      console.log(result.data.DailyForecasts[0].RealFeelTemperature.Minimum);
-      try{temp = (result.data.DailyForecasts[0].RealFeelTemperature.Minimum.value + result.data.DailyForecasts[0].RealFeelTemperature.Maximum.value)/2;
-         }catch(err){
-           console.log(`Issue getting average of high and low feels like! Error: ${err}`);
-         temp=50;}
+            console.log(result.data.DailyForecasts[0].RealFeelTemperature.Minimum);
+            try {
+                temp = (result.data.DailyForecasts[0].RealFeelTemperature.Minimum.value + result.data.DailyForecasts[0].RealFeelTemperature.Maximum.value) / 2;
+            } catch (err) {
+                console.log(`Issue getting average of high and low feels like! Error: ${err}`);
+                temp = 50;
+            }
         })
         .catch((result) => {
             console.log("We screwed up");
         });
-  console.log(temp);
-  if(!temp){
-    console.log("Temperature was not correctly calculated.");
-    temp = 50
-  }
+    console.log(temp);
+    if (!temp) {
+        console.log("Temperature was not correctly calculated.");
+        temp = 50
+    }
     return decideAndStateOutfit(conv, city, gender, occasion, temp, wind);
 }
 
@@ -447,9 +452,9 @@ app.intent('Permission', (conv) => {
     };
     conv.ask(new Permission(options));
     conv.ask(new Suggestions([
-        'Yes', 
+        'Yes',
         'No'
-      ]));
+    ]));
 });
 app.intent('Permission Handler', (conv, params, confirmationGranted) => {
     const { location } = conv.device;
