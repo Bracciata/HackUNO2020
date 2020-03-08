@@ -78,14 +78,14 @@ app.intent('Check Preferences', (conv) => {
                 conv.ask(`Your current hot preference is ${conv.user.storage.hotPref}`);
             }
         } else {
-            conv.close(`Would you like to set your preference?`);
+            conv.ask(`Would you like to set your preference?`);
             conv.ask(new Suggestions([
                 'Yes',
                 'No'
             ]));
         }
     } else {
-        conv.close(`We do not have permission to set your preferences. Please sign in to become verified.`);
+        conv.ask(`We do not have permission to set your preferences. Please sign in to become verified.`);
     }
     conv.ask(new Suggestions([
         'Yes',
@@ -98,9 +98,9 @@ app.intent('Save Preferences', (conv) => {
         conv.user.storage.coldPref = conv.data.coldPref;
         conv.user.storage.modPref = conv.data.modPref;
         conv.user.storage.hotPref = conv.data.hotPref;
-        conv.close(`Alright, I'll store that for next time. See you then.`);
+        conv.ask(`Alright, I'll store that for next time.`);
     } else {
-        conv.close(`I can't save that now, but we can remember them next time!`);
+        conv.ask(`I can't save that now, but we can remember them next time!`);
     }
 });
 app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occasion }) => {
