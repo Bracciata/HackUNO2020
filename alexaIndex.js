@@ -1,7 +1,7 @@
 // Lambda Function code for Alexa.
 // Paste this into your index.js file. 
 
-const Alexa = require("ask-sdk");
+const Alexa = require("ask-sdk-core");
 const https = require("https");
 
 
@@ -43,7 +43,34 @@ const maxHistorySize = 20; // remember only latest 20 intents
 
 
 // 1. Intent Handlers =============================================
+const Wear_Handler = {
+    canHandle(handlerInput) {
+        const request = handlerInput.requestEnvelope.request;
+        return request.type === 'IntentRequest' && request.intent.name === 'Wear';
+    },
+    async handle(handlerInput) {
+        //const response = await httpGet('https://dataservice.accuweather.com', '/forecasts/v1/daily/5day/349291?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&language=en-us&details=true&metric=false');
 
+
+        //console.log(response);
+        var wind = 18;
+        var precipitation = false;
+        var temp = 50;
+        var out = "";
+        if (x === 0) {
+            out = decideAndStateOutfit('Denver', 'male', 'formal', false, 50);
+            x += 1;
+        }
+        else {
+            out = decideAndStateOutfit('Omaha', 'male', 'lazy', false, 50);
+            x -= 1;
+        }
+        return handlerInput.responseBuilder
+            .speak(out)
+            .reprompt("Any other questions?")
+            .getResponse();
+    },
+};
 const SetTemperaturePreferences_Handler = {
     canHandle(handlerInput) {
         const request = handlerInput.requestEnvelope.request;
@@ -242,6 +269,7 @@ function httpGet(host, path) {
     }));
 }
 function decideAndStateOutfit(city, gender, occasion, wind, temp) {
+    console.log("HIT ME");
     const intro = ['I recommend you wear a ', 'As your friend, I recommend you wear a ', 'As your stylist, I recommend you wear a ', 'Based off of AccuWeather and Google Data, I recommend you wear a ', 'Based off of data sourced from AccuWeather, I recommend you wear a ', 'According to my calculations, I recommend you wear a ', 'You should wear a ', 'As your friend, I think you should wear a ', 'As your stylist, I think you should wear a ', 'Based off of AccuWeather and Google data, I think you should wear a ', 'Based off of data sourced from Accuweather, I think you should wear a ', 'According to my calculations, I think you should wear a ', 'As your friend, I think you would look great in a ', 'As your stylist, I think you would look great in a ', 'Based off of AccuWeather and Google data, I think you would look great in a ', 'Based off of data sourced from AccuWeather, I think you would look great in a ', 'According to my calculations, I think you would look great in a ', 'As your friend, I think It would great idea to wear a ', 'As your stylist, I think It would great idea to wear a ', 'Based off of AccuWeather and Google data, I think It would great idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would great idea to wear a ', 'According to my calculations, I think It would great idea to wear a ', 'As your friend, I think It would fantastic idea to wear a ', 'As your stylist, I think It would fantastic idea to wear a ', 'Based off of AccuWeather and Google data, I think It would fantastic idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would fantastic idea to wear a ', 'According to my calculations, I think It would fantastic idea to wear a ', 'As your friend, I think It would lovely idea to wear a ', 'As your stylist, I think It would lovely idea to wear a ', 'Based off of AccuWeather and Google data, I think It would lovely idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would lovely idea to wear a ', 'According to my calculations, I think It would lovely idea to wear a ', 'As your friend, I personally recommend you wear a ', 'As your stylist, I personally recommend you wear a ', 'Based off of AccuWeather and Google data, I personally recommend you wear a ', 'Based off of data sourced from AccuWeather, I personally recommend you wear a ', 'According to my calculations, I personally recommend you wear a ', 'As your friend, I think you should wear a ', 'As your stylist, I think you should wear a ', 'Based off of AccuWeather and Google data, I think you should wear a ', 'Based off of data sourced from AccuWeather, I think you should wear a ', 'According to my calculations, I think you should wear a '];
 
     var coldFormal = ['suit', 'black suit', 'gray suit', 'tan suit', 'dress with tights', 'tuxedo', 'floor length dress'];
@@ -348,27 +376,27 @@ function decideAndStateOutfit(city, gender, occasion, wind, temp) {
     var clothing;
     if (temp <= 40) { // Cold 
         switch (occasion) {
-            case 'Formal':
+            case 'formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = coldFormal[Math.floor(Math.random() * coldFormal.length)];
                 return `${chosenIntro} ${clothing}.`;
                 break;
-            case 'Business Casual':
+            case 'business casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = coldBusinessCasual[Math.floor(Math.random() * coldBusinessCasual.length)];
                 return `${chosenIntro} ${clothing}.`;
                 break;
-            case 'Workout':
+            case 'workout':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = coldWorkout[Math.floor(Math.random() * coldWorkout.length)];
                 return `${chosenIntro} ${clothing}.`;
                 break;
-            case 'Lazy':
+            case 'lazy':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = coldLazy[Math.floor(Math.random() * coldLazy.length)];
                 return `${chosenIntro} ${clothing}.`;
                 break;
-            case 'Casual':
+            case 'casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = coldCasual[Math.floor(Math.random() * coldCasual.length)];
                 return `${chosenIntro} ${clothing}.`;
@@ -380,27 +408,27 @@ function decideAndStateOutfit(city, gender, occasion, wind, temp) {
         }
     } else if (temp <= 68) { // Moderate
         switch (occasion) {
-            case 'Formal':
+            case 'formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = moderateFormal[Math.floor(Math.random() * moderateFormal.length)];
                 return `${chosenIntro} ${clothing}.`;
                 break;
-            case 'Business Casual':
+            case 'business casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = moderateBusinessCasual[Math.floor(Math.random() * moderateBusinessCasual.length)];
                 return `${chosenIntro} ${clothing}.`;
                 break;
-            case 'Workout':
+            case 'workout':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = moderateWorkout[Math.floor(Math.random() * moderateWorkout.length)];
                 return `${chosenIntro} ${clothing}.`;
                 break;
-            case 'Lazy':
+            case 'lazy':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = moderateLazy[Math.floor(Math.random() * moderateLazy.length)];
                 return `${chosenIntro} ${clothing}.`;
                 break;
-            case 'Casual':
+            case 'casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = moderateCasual[Math.floor(Math.random() * moderateCasual.length)];
                 return `${chosenIntro} ${clothing}.`;
@@ -412,27 +440,27 @@ function decideAndStateOutfit(city, gender, occasion, wind, temp) {
         }
     } else { // Hot 
         switch (occasion) {
-            case 'Formal':
+            case 'formal':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = hotFormal[Math.floor(Math.random() * hotFormal.length)];
                 return `${chosenIntro} ${clothing}.`;
                 break;
-            case 'Business Casual':
+            case 'business casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = hotBusinessCasual[Math.floor(Math.random() * hotBusinessCasual.length)];
                 return `${chosenIntro} ${clothing}.`;
                 break;
-            case 'Workout':
+            case 'workout':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = hotWorkout[Math.floor(Math.random() * hotWorkout.length)];
                 return `${chosenIntro} ${clothing}.`;
                 break;
-            case 'Lazy':
+            case 'lazy':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = hotLazy[Math.floor(Math.random() * hotLazy.length)];
                 return `${chosenIntro} ${clothing}.`;
                 break;
-            case 'Casual':
+            case 'casual':
                 chosenIntro = intro[Math.floor(Math.random() * intro.length)];
                 clothing = hotCasual[Math.floor(Math.random() * hotCasual.length)];
                 return `${chosenIntro} ${clothing}.`;
@@ -483,34 +511,7 @@ const DefaultFallbackIntent_Handler = {
     },
 };
 
-const Wear_Handler = {
-    canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request;
-        return request.type === 'IntentRequest' && request.intent.name === 'Wear';
-    },
-    async handle(handlerInput) {
-        const response = await httpGet('http://dataservice.accuweather.com', '/forecasts/v1/daily/5day/349291?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&language=en-us&details=true&metric=false');
 
-
-        console.log(response);
-        var wind = 18;
-        var precipitation = false;
-        var temp = 50;
-        var out = "";
-        if (x === 0) {
-            out = decideAndStateOutfit('Denver', 'male', 'formal', false, 50);
-            x += 1;
-        }
-        else {
-            out = decideAndStateOutfit('Omaha', 'male', 'lazy', false, 50);
-            x -= 1;
-        }
-        return handlerInput.responseBuilder
-            .speak(out)
-            .reprompt("Any other questions?")
-            .getResponse();
-    },
-};
 
 function cleanList(listOne, listTwo) {
     for (var i = 0; i < listOne.length; ++i) {
@@ -650,7 +651,7 @@ const LaunchRequest_Handler = {
     handle(handlerInput) {
         const responseBuilder = handlerInput.responseBuilder;
 
-        let say = 'hello' + ' and welcome to ' + invocationName + ' ! Say help to hear some options.';
+        let say = 'Howday its uhhh meeee Uno. How can I help you today? ';
 
         let skillTitle = capitalize(invocationName);
 
@@ -1070,16 +1071,16 @@ const ResponsePersistenceInterceptor = {
 
 
 // 4. Exports handler function and setup ===================================================
-const skillBuilder = Alexa.SkillBuilders.standard();
+const skillBuilder = Alexa.SkillBuilders.custom();
 exports.handler = skillBuilder
     .addRequestHandlers(
+        Wear_Handler,
         SetTemperaturePreferences_Handler,
         SetGender_Handler,
         SavePreferences_Handler,
         Permission_Handler,
         DefaultWelcomeIntent_Handler,
         DefaultFallbackIntent_Handler,
-        Wear_Handler,
         CheckOptions_Handler,
         SubscribeToDailyUpdates_Handler,
         AMAZON_StopIntent_Handler,
