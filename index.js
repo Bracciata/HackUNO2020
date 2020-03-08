@@ -315,7 +315,7 @@ app.intent('Subscribe to Daily Updates', (conv) => {
         frequency: 'DAILY',
     }));*/ //TODO finalize this implementation
 });
-app.intent('Get Location', (conv) => {
+app.intent('Permission', (conv) => {
   console.log("HEYTOMMAYYYYYY");
     let context = 'Will you let me see your location? ';
     // Location permissions only work for verified users
@@ -333,7 +333,7 @@ app.intent('Get Location', (conv) => {
   // [END df_js_permission_reason]
   
   // [START df_js_permission_accepted]
-  app.intent('Premission Handler', (conv, params, confirmationGranted) => {
+  app.intent('Permission Handler', (conv, params, confirmationGranted) => {
     // Also, can access latitude and longitude
     // const { latitude, longitude } = location.coordinates;
     const {location} = conv.device;
