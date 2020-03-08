@@ -7,6 +7,8 @@ const app = dialogflow({ debug: true });
 app.intent('Default Welcome Intent', (conv) => {
     var greetings = ['Hey I am UNO, how can I help you today?', 'Welcome! My name is Uno, how can I help you today?', 'Welcome! It\'s Uno, how can I help you today?', 'Greetings! My name is Uno, how can I help you today?', 'Greetings! It\'s Uno, how can I help you today?', 'Salutations! My name is Uno, how can I help you today?', 'Salutations! It\'s Uno, how can I help you today?', 'Howdy! My name is Uno, how can I help you today?', 'Howdy! It\'s Uno, how can I help you today?', 'Hello! My name is Uno, how can I help you today?', 'Hello! It\'s Uno, how can I help you today?', 'Hi! My name is Uno, how can I help you today?', 'Hi! It\'s Uno, how can I help you today?'];
     var chosenGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+    // Call to set default preferences.
+    initialStartup(conv);
     conv.ask(`${chosenGreeting}`);
     conv.ask(new Suggestions([
         'What do I wear now?',
@@ -82,7 +84,6 @@ app.intent('Save Preferences', (conv) => {
     }
 });
 app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occasion }) => {
-    initialStartup(conv);
     console.log(`City is ${city}`);
     if (city != "") {
         // Location was passed.
