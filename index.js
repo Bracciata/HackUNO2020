@@ -31,6 +31,9 @@ app.intent('Set Gender', (conv, { "gender" : gender }) => {
     agent.add(conv);
 });
 app.intent('Set Temperature Preferences', (conv, {"temperature" : temperature, "condition" : condition}) => {
+    console.log(temperature);
+    console.log(condition);
+    console.log("SEEEEEEET");
     if (condition === 'cold' && temperature < conv.user.storage.modPref) {
         conv.data.coldPref = temperature;
     } else if (condition === 'moderate' && temperature < conv.user.storage.hotPref && temperature > conv.user.storage.coldPref){
@@ -65,9 +68,15 @@ app.intent('Check Preferences', (conv) => {
 app.intent('Save Preferences', (conv) => {
     if (conv.user.verification === 'VERIFIED') {
         conv.user.storage.gender = conv.data.gender;
-        conv.user.storage.coldPref = conv.data.coldPref;
-        conv.user.storage.modPref = conv.data.modPref;
-        conv.user.storage.hotPref = conv.data.hotPref;
+        conv.user.storage.coldPref = 42;
+        conv.user.storage.modPref = '60';
+        conv.user.storage.hotPref = 73;
+        console.log("COLD");
+        console.log(conv.user.storage.coldPref);
+        console.log("Moderate");
+        console.log(conv.user.storage.modPref);
+        console.log("HOT");
+        console.log(conv.user.storage.hotPref);
         conv.close(`Alright, I'll store that for next time. See you then.`);
     } else {
         conv.close(`I can't save that now, but we can remember them next time!`);
