@@ -5,7 +5,7 @@ const functions = require('firebase-functions');
 const app = dialogflow({ debug: true });
 
 app.intent('Default Welcome Intent', (conv) => {
-    var greetings = ['Hey I am UNO, how can I help you today?', 'Welcome! My name is Uno, how can I help you today?', 'Welcome! It\'s Uno, how can I help you today?', 'Greetings! My name is Uno, how can I help you today?', 'Greetings! It\'s Uno, how can I help you today?', 'Salutations! My name is Uno, how can I help you today?', 'Salutations! It\'s Uno, how can I help you today?', 'Howdy! My name is Uno, how can I help you today?', 'Howdy! It\'s Uno, how can I help you today?', 'Hello! My name is Uno, how can I help you today?', 'Hello! It\'s Uno, how can I help you today?', 'Hi! My name is Uno, how can I help you today?', 'Hi! It\'s Uno, how can I help you today?'];
+    var greetings = ['Hey I am UNO, how can I help you today?', 'Welcome! My name is Uno, how can I help you today?', 'Welcome! it\'s Uno, how can I help you today?', 'Greetings! My name is Uno, how can I help you today?', 'Greetings! It\'s Uno, how can I help you today?', 'Salutations! My name is Uno, how can I help you today?', 'Salutations! It\'s Uno, how can I help you today?', 'Howdy! My name is Uno, how can I help you today?', 'Howdy! It\'s Uno, how can I help you today?', 'Hello! My name is Uno, how can I help you today?', 'Hello! It\'s Uno, how can I help you today?', 'Hi! My name is Uno, how can I help you today?', 'Hi! It\'s Uno, how can I help you today?'];
     var chosenGreeting = greetings[Math.floor(Math.random() * greetings.length)];
     // Call to set default preferences.
     initialStartup(conv);
@@ -128,8 +128,8 @@ app.intent('Wear', (conv, { "geo-city": city, "gender": gender, "occasion": occa
             getLocationIdForAccuweather(conv, latitude, longitude, city, gender, occasion);
         }
         else {
+            console.log("WTFFFFFF");
             conv.ask("Do I have your premission to get your location?");
-            // ADD SUGGESTION HERE
             conv.ask(new Suggestions([
                 'Yes, you do',
                 'No, you don\'t'
@@ -192,7 +192,7 @@ async function geoCityToCoords(conv, city, gender, occasion) {
 }
 
 function decideAndStateOutfit(conv, city, gender, occasion, wind, temp) {
-    const intro = ['I recommend you wear a ', 'As your friend, I recommend you wear a ', 'As your stylist, I recommend you wear a ', 'Based off of AccuWeather and Google Data, I recommend you wear a ', 'Based off of data sourced from AccuWeather, I recommend you wear a ', 'According to my calculations, I recommend you wear a ', 'You should wear a ', 'As your friend, I think you should wear a ', 'As your stylist, I think you should wear a ', 'Based off of AccuWeather and Google data, I think you should wear a ', 'Based off of data sourced from Accuweather, I think you should wear a ', 'According to my calculations, I think you should wear a ', 'As your friend, I think you would look great in a ', 'As your stylist, I think you would look great in a ', 'Based off of AccuWeather and Google data, I think you would look great in a ', 'Based off of data sourced from AccuWeather, I think you would look great in a ', 'According to my calculations, I think you would look great in a ', 'As your friend, I think It would great idea to wear a ', 'As your stylist, I think It would great idea to wear a ', 'Based off of AccuWeather and Google data, I think It would great idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would great idea to wear a ', 'According to my calculations, I think It would great idea to wear a ', 'As your friend, I think It would be a fantastic idea to wear a ', 'As your stylist, I think It would be a fantastic idea to wear a ', 'Based off of AccuWeather and Google data, I think It would be a fantastic idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would be a fantastic idea to wear a ', 'According to my calculations, I think It would be a fantastic idea to wear a ', 'As your friend, I think It would lovely idea to wear a ', 'As your stylist, I think It would lovely idea to wear a ', 'Based off of AccuWeather and Google data, I think It would lovely idea to wear a ', 'Based off of data sourced from AccuWeather, I think It would lovely idea to wear a ', 'According to my calculations, I think It would lovely idea to wear a ', 'As your friend, I personally recommend you wear a ', 'As your stylist, I personally recommend you wear a ', 'Based off of AccuWeather and Google data, I personally recommend you wear a ', 'Based off of data sourced from AccuWeather, I personally recommend you wear a ', 'According to my calculations, I personally recommend you wear a ', 'As your friend, I think you should wear a ', 'As your stylist, I think you should wear a ', 'Based off of AccuWeather and Google data, I think you should wear a ', 'Based off of data sourced from AccuWeather, I think you should wear a ', 'According to my calculations, I think you should wear a '];
+    const intro = ['I recommend you wear a ', 'As your friend, I recommend you wear a ', 'As your stylist, I recommend you wear a ', 'Based off of AccuWeather and Google Data, I recommend you wear a ', 'Based off of data sourced from AccuWeather, I recommend you wear a ', 'According to my calculations, I recommend you wear a ', 'You should wear a ', 'As your friend, I think you should wear a ', 'As your stylist, I think you should wear a ', 'Based off of AccuWeather and Google data, I think you should wear a ', 'Based off of data sourced from Accuweather, I think you should wear a ', 'According to my calculations, I think you should wear a ', 'As your friend, I think you would look great in a ', 'As your stylist, I think you would look great in a ', 'Based off of AccuWeather and Google data, I think you would look great in a ', 'Based off of data sourced from AccuWeather, I think you would look great in a ', 'According to my calculations, I think you would look great in a ', 'As your friend, I think it would great idea to wear a ', 'As your stylist, I think it would great idea to wear a ', 'Based off of AccuWeather and Google data, I think it would great idea to wear a ', 'Based off of data sourced from AccuWeather, I think it would great idea to wear a ', 'According to my calculations, I think it would great idea to wear a ', 'As your friend, I think it would be a fantastic idea to wear a ', 'As your stylist, I think it would be a fantastic idea to wear a ', 'Based off of AccuWeather and Google data, I think it would be a fantastic idea to wear a ', 'Based off of data sourced from AccuWeather, I think it would be a fantastic idea to wear a ', 'According to my calculations, I think it would fantastic idea to wear a ', 'As your friend, I think it would be a lovely idea to wear a ', 'As your stylist, I think it would be a lovely idea to wear a ', 'Based off of AccuWeather and Google data, I think it would be a lovely idea to wear a ', 'Based off of data sourced from AccuWeather, I think it would be a lovely idea to wear a ', 'According to my calculations, I think it would lovely idea to wear a ', 'As your friend, I personally recommend you wear a ', 'As your stylist, I personally recommend you wear a ', 'Based off of AccuWeather and Google data, I personally recommend you wear a ', 'Based off of data sourced from AccuWeather, I personally recommend you wear a ', 'According to my calculations, I personally recommend you wear a ', 'As your friend, I think you should wear a ', 'As your stylist, I think you should wear a ', 'Based off of AccuWeather and Google data, I think you should wear a ', 'Based off of data sourced from AccuWeather, I think you should wear a ', 'According to my calculations, I think you should wear a '];
 
     var coldFormal = ['suit', 'black suit', 'gray suit', 'tan suit', 'dress with tights', 'tuxedo', 'floor length dress'];
     var moderateFormal = ['suit', 'black suit', 'gray suit', 'tan suit', 'dress with tights', 'tuxedo', 'floor length dress', 'dress'];
@@ -420,7 +420,7 @@ async function accuweather(conv, location, city, gender, occasion) {
     var wind = 18;
     var precipitation = false;
     var temp = 50;
-    await axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&language=en-us&details=true&metric=false`)
+    await axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location}?apikey=A5mpbG5KTGlMLQavjm2O9yUGSvQ1vlVL&language=en-us&details=true&metric=false`)
         .then((result) => {
             console.log(result.data);
             // Pass this to what to what to wear along with other data from entities city, gender, and occasion.
@@ -449,7 +449,7 @@ async function accuweather(conv, location, city, gender, occasion) {
 }
 
 async function getLocationIdForAccuweather(conv, lat, long, city, gender, occasion) {
-    var url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=K4BMr74M7Wj03mAhAYgLGxWtbC5rJg2U&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`;
+    var url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=A5mpbG5KTGlMLQavjm2O9yUGSvQ1vlVL&q=${lat}%2C${long}&language=en-us&details=true&toplevel=false`;
     console.log(url);
     var locationKey = "349291"; // Defaults to Omaha
     await axios.get(url)
@@ -490,6 +490,18 @@ app.intent('Permission', (conv) => {
         'No'
     ]));*/
 });
+app.intent('Initial Permission Handler', (conv, params, confirmationGranted) => {
+    const { location } = conv.device;
+    if (confirmationGranted && location) {
+        console.log("Got permissions to get location.");
+        conv.add("Thanks, reccomendation coming right up!");
+        const { latitude, longitude } = location.coordinates;
+        return getLocationIdForAccuweather(conv, latitude, longitude, "", "", "");
+    } else {
+        conv.ask(`Looks like I can't get your information.`);
+    }
+});
+
 app.intent('Permission Handler', (conv, params, confirmationGranted) => {
     const { location } = conv.device;
     if (confirmationGranted && location) {
